@@ -1,8 +1,18 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.4",
+	"EngineAssociation": "{F470514C-4F0D-56C8-162B-ADB68E8FA149}",
 	"Category": "",
 	"Description": "",
+	"Modules": [
+		{
+			"Name": "RacersProject_UE5",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
 	"Plugins": [
 		{
 			"Name": "ModelingToolsEditorMode",
