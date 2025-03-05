@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class UVerticalBox;
 class UBackgroundBlur;
 class UDataAssetSpacecraft;
 
@@ -38,4 +39,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UBackgroundBlur* LockSpacecraft;
+
+	UFUNCTION(BlueprintCallable)
+	void CreateChildrenForDetailCustom(UVerticalBox* ListObject);
+
+	UFUNCTION()
+	void SwitchMaterialPlayer();
 };

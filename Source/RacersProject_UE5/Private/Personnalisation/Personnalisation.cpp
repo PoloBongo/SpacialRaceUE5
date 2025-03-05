@@ -1,6 +1,11 @@
 #include "Personnalisation/Personnalisation.h"
 
 #include "Components/BackgroundBlur.h"
+#include "Components/Button.h"
+#include "Components/ComboBoxString.h"
+#include "Components/HorizontalBox.h"
+#include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 
 APersonnalisation::APersonnalisation(): MaxIndex(0), ActualMaterial(nullptr), LockSpacecraft(nullptr)
@@ -48,5 +53,56 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 		}
 		ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
 	}
+}
+
+void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
+{
+	if (!ListObject) return;
+	
+	ListObject->ClearChildren();
+	
+	if (DataAssetSpacecrafts[Index]->IsChoose)
+	{
+		for (const TPair<UStaticMesh*, bool>& Pair : DataAssetSpacecrafts[Index]->SpacecraftMeshes)
+		{
+			const UStaticMesh* StaticMesh = Pair.Key;
+
+			if (StaticMesh)
+			{
+				FString MeshName = StaticMesh->GetName();
+
+				UHorizontalBox* NewHorizontalBox = NewObject<UHorizontalBox>(ListObject);
+				UButton* NewButton = NewObject<UButton>(NewHorizontalBox);
+				UTextBlock* NewTextBlock = NewObject<UTextBlock>(NewButton);
+				UComboBoxString* NewComboBoxString = NewObject<UComboBoxString>(NewHorizontalBox);
+
+				NewTextBlock->SetText(FText::FromString(MeshName));
+
+				NewButton->AddChild(NewTextBlock);
+				NewHorizontalBox->AddChild(NewButton);
+				NewHorizontalBox->AddChild(NewComboBoxString);
+				ListObject->AddChild(NewHorizontalBox);
+
+				NewComboBoxString->AddOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+
+				for (const TPair<UMaterial*, bool>& MaterialPair : DataAssetSpacecrafts[Index]->SpacecraftMaterials)
+				{
+					const UMaterial* Material = MaterialPair.Key;
+
+					if (Material)
+					{
+						NewComboBoxString->AddOption(Material->GetName());
+					}
+				}
+
+				NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+			}
+		}
+	}
+}
+
+void APersonnalisation::SwitchMaterialPlayer()
+{
+	
 }
 

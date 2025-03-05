@@ -18,10 +18,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	UMaterial* Material;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	UMaterial* InitialMaterial;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
-	TArray<UStaticMesh*> SpacecraftMeshes;
+	TMap<UStaticMesh*, bool> SpacecraftMeshes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	TMap<UMaterial*, bool> SpacecraftMaterials;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	bool Unlock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	bool IsChoose;
 };
