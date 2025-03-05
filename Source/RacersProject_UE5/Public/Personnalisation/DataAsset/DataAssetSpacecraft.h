@@ -17,5 +17,11 @@ public:
 	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	UMaterial* Material;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	TArray<UStaticMesh*> SpacecraftMeshes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	bool Unlock;
 };
