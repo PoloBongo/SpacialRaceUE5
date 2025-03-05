@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class UPlayerSpacecraft;
 class UVerticalBox;
 class UBackgroundBlur;
 class UDataAssetSpacecraft;
@@ -31,6 +32,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<UDataAssetSpacecraft*> DataAssetSpacecrafts;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	UPlayerSpacecraft* PlayerDataAssetSpacecrafts;
 
 	void GetValidDataAssetSpacecraft(int _Index);
 

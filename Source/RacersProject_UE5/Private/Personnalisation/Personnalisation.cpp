@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
+#include "Personnalisation/DataAsset/PlayerSpacecraft.h"
 
 APersonnalisation::APersonnalisation(): MaxIndex(0), ActualMaterial(nullptr), LockSpacecraft(nullptr)
 {
@@ -46,12 +47,13 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 		if (!DataAssetSpacecrafts[_Index]->Unlock)
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Visible);
+			ActualMaterial = PlayerDataAssetSpacecrafts->Material;
 		}
 		else
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Hidden);
+			ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
 		}
-		ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
 	}
 }
 
