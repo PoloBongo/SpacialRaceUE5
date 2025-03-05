@@ -33,4 +33,28 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	bool IsChoose;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float SpeedToForceFactor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float AngularSpeedToForceFactor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float Damping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float Stifness;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float LateralForceReduction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float Mass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float AngularRotSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float ThrustSpeed;
 };
