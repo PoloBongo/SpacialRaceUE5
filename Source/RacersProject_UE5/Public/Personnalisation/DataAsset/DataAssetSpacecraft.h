@@ -48,4 +48,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	float LateralForceReduction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float Mass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float AngularRotSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	float ThrustSpeed;
 };

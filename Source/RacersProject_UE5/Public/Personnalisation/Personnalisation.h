@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class UButtonAvailableMesh;
 class UPlayerSpacecraft;
 class UVerticalBox;
 class UBackgroundBlur;
@@ -37,6 +38,9 @@ private:
 	UPlayerSpacecraft* PlayerDataAssetSpacecrafts;
 
 	void GetValidDataAssetSpacecraft(int _Index);
+	bool GetValidPlayerSpacecraft(UStaticMesh* TargetMesh) const;
+	void RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle);
+	void AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UMaterial* ActualMaterial;
@@ -47,6 +51,26 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void CreateChildrenForDetailCustom(UVerticalBox* ListObject);
 
-	UFUNCTION()
-	void SwitchMaterialPlayer();
+	void ResetIsChooseSpacecraft();
+
+	void SetButtonGreen(FButtonStyle& ButtonStyle);
+	void SetButtonRed(FButtonStyle& ButtonStyle);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TArray<FString> BlacklistBodyRemoved;
+	
+	/* Clicked Part */
+	UFUNCTION(BlueprintCallable, Category = "Button Delegate")
+	void TriggerButtonClickedDelegate(UStaticMesh* SelectedMesh, UButtonAvailableMesh* SelectedButton);
+    
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Clicked Property", meta=(AllowPrivateAccess="true"))
+	UUserWidget* CustomizationWidget;
+    
+	void AttachClickedEvent() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TSubclassOf<UButtonAvailableMesh> NewButtonClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TMap<UButtonAvailableMesh*, UStaticMesh*> ButtonsMeshes;
 };

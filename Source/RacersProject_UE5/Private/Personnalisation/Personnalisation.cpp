@@ -1,7 +1,7 @@
 #include "Personnalisation/Personnalisation.h"
 
 #include "Components/BackgroundBlur.h"
-#include "Components/Button.h"
+#include "Personnalisation/ButtonAvailableMesh.h"
 #include "Components/ComboBoxString.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
@@ -9,7 +9,9 @@
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 #include "Personnalisation/DataAsset/PlayerSpacecraft.h"
 
-APersonnalisation::APersonnalisation(): MaxIndex(0), ActualMaterial(nullptr), LockSpacecraft(nullptr)
+APersonnalisation::APersonnalisation(): MaxIndex(0), PlayerDataAssetSpacecrafts(nullptr), ActualMaterial(nullptr),
+                                        LockSpacecraft(nullptr),
+                                        CustomizationWidget(nullptr)
 {
 }
 
@@ -53,58 +55,156 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Hidden);
 			ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
+			DataAssetSpacecrafts[_Index]->IsChoose = true;
+		}
+	}
+}
+
+void APersonnalisation::ResetIsChooseSpacecraft()
+{	
+	for (int i = 0; i < DataAssetSpacecrafts.Num(); i++)
+	{
+		if (!DataAssetSpacecrafts[i]->IsChoose)
+		{
+			DataAssetSpacecrafts[i]->IsChoose = false;
 		}
 	}
 }
 
 void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 {
-	if (!ListObject) return;
-	
+	if (!ListObject && !NewButtonClass) return;
+
+	ButtonsMeshes.Reset();
 	ListObject->ClearChildren();
 	
-	if (DataAssetSpacecrafts[Index]->IsChoose)
+	if (!DataAssetSpacecrafts[Index]->IsChoose) return;
+
+	for (const TPair<UStaticMesh*, bool>& Pair : DataAssetSpacecrafts[Index]->SpacecraftMeshes)
 	{
-		for (const TPair<UStaticMesh*, bool>& Pair : DataAssetSpacecrafts[Index]->SpacecraftMeshes)
+		UStaticMesh* StaticMesh = Pair.Key;
+
+		if (!StaticMesh) return;
+
+		FString MeshName = StaticMesh->GetName();
+
+		UHorizontalBox* NewHorizontalBox = NewObject<UHorizontalBox>(ListObject);
+		UButtonAvailableMesh* NewButton = NewObject<UButtonAvailableMesh>(this, NewButtonClass);
+		UTextBlock* NewTextBlock = NewObject<UTextBlock>(NewButton);
+		UComboBoxString* NewComboBoxString = NewObject<UComboBoxString>(NewHorizontalBox);
+
+		NewTextBlock->SetText(FText::FromString(MeshName));
+
+		NewButton->AddChild(NewTextBlock);
+		NewHorizontalBox->AddChild(NewButton);
+		NewHorizontalBox->AddChild(NewComboBoxString);
+		ListObject->AddChild(NewHorizontalBox);
+
+		NewComboBoxString->AddOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+
+		for (const TPair<UMaterial*, bool>& MaterialPair : DataAssetSpacecrafts[Index]->SpacecraftMaterials)
 		{
-			const UStaticMesh* StaticMesh = Pair.Key;
+			const UMaterial* Material = MaterialPair.Key;
 
-			if (StaticMesh)
+			if (Material)
 			{
-				FString MeshName = StaticMesh->GetName();
-
-				UHorizontalBox* NewHorizontalBox = NewObject<UHorizontalBox>(ListObject);
-				UButton* NewButton = NewObject<UButton>(NewHorizontalBox);
-				UTextBlock* NewTextBlock = NewObject<UTextBlock>(NewButton);
-				UComboBoxString* NewComboBoxString = NewObject<UComboBoxString>(NewHorizontalBox);
-
-				NewTextBlock->SetText(FText::FromString(MeshName));
-
-				NewButton->AddChild(NewTextBlock);
-				NewHorizontalBox->AddChild(NewButton);
-				NewHorizontalBox->AddChild(NewComboBoxString);
-				ListObject->AddChild(NewHorizontalBox);
-
-				NewComboBoxString->AddOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
-
-				for (const TPair<UMaterial*, bool>& MaterialPair : DataAssetSpacecrafts[Index]->SpacecraftMaterials)
-				{
-					const UMaterial* Material = MaterialPair.Key;
-
-					if (Material)
-					{
-						NewComboBoxString->AddOption(Material->GetName());
-					}
-				}
-
-				NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+				NewComboBoxString->AddOption(Material->GetName());
 			}
 		}
+
+		NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+				
+		FButtonStyle ButtonStyle = NewButton->GetStyle();
+
+		for (int i = 0; i < PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Num(); i++)
+		{
+			if (StaticMesh == PlayerDataAssetSpacecrafts->ActualPlayerMeshes[i])
+			{
+				SetButtonGreen(ButtonStyle);
+			}
+			else
+			{
+				SetButtonRed(ButtonStyle);
+			}
+			break;
+		}
+		NewButton->SetStyle(ButtonStyle);
+		ButtonsMeshes.Add(NewButton, StaticMesh);
+	}
+	AttachClickedEvent();
+}
+
+void APersonnalisation::TriggerButtonClickedDelegate(UStaticMesh* SelectedMesh, UButtonAvailableMesh* SelectedButton)
+{
+	if (!SelectedMesh || !SelectedButton || !PlayerDataAssetSpacecrafts) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Nom : %s"), *SelectedMesh->GetName());
+	FButtonStyle ButtonStyle = SelectedButton->GetStyle();
+	
+	if (!GetValidPlayerSpacecraft(SelectedMesh))
+	{
+		AddStaticMeshFromPlayerSpacecraft(SelectedMesh, ButtonStyle);
+	}
+	else
+	{
+		RemoveStaticMeshFromPlayerSpacecraft(SelectedMesh, ButtonStyle);
+	}
+
+	SelectedButton->SetStyle(ButtonStyle);
+}
+
+void APersonnalisation::AttachClickedEvent() const
+{
+	if (UFunction* BindingTargetButtonClickedFunction = CustomizationWidget->FindFunction(TEXT("BindingTargetButtonClicked")))
+	{        
+		CustomizationWidget->ProcessEvent(BindingTargetButtonClickedFunction, nullptr);
 	}
 }
 
-void APersonnalisation::SwitchMaterialPlayer()
+bool APersonnalisation::GetValidPlayerSpacecraft(UStaticMesh* TargetMesh) const
 {
-	
+	if (!PlayerDataAssetSpacecrafts) return false;
+
+	return PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Contains(TargetMesh);
 }
 
+void APersonnalisation::RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle)
+{
+	if (!PlayerDataAssetSpacecrafts) return;
+
+	for (int i = 0; i < BlacklistBodyRemoved.Num(); i++)
+	{
+		if (TargetMesh->GetName() == BlacklistBodyRemoved[i]) return;
+	}
+
+	if (PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Contains(TargetMesh))
+	{
+		PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Remove(TargetMesh);
+		SetButtonRed(ButtonStyle);
+	}
+}
+
+void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle)
+{
+	if (!PlayerDataAssetSpacecrafts) return;
+	
+	if (!PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Contains(TargetMesh))
+	{
+		PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Add(TargetMesh);
+		SetButtonGreen(ButtonStyle);
+	}
+}
+
+void APersonnalisation::SetButtonGreen(FButtonStyle& ButtonStyle)
+{
+	ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor::Green);
+	ButtonStyle.Hovered.TintColor = FSlateColor(FLinearColor::Green);
+	ButtonStyle.Pressed.TintColor = FSlateColor(FLinearColor::Green);
+}
+
+void APersonnalisation::SetButtonRed(FButtonStyle& ButtonStyle)
+{
+	ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor::Red);
+	ButtonStyle.Hovered.TintColor = FSlateColor(FLinearColor::Red);
+	ButtonStyle.Pressed.TintColor = FSlateColor(FLinearColor::Red);
+}
