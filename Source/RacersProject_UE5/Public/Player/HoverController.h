@@ -12,8 +12,7 @@ class RACERSPROJECT_UE5_API AHoverController : public APawn
 	GENERATED_BODY()
 
 public:
-	AHoverController();
-	AHoverController(int _Length);
+	AHoverController(const FObjectInitializer& ObjectInitializer);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void SetLengthSpacecraftMesh(int _Length);
@@ -34,7 +33,8 @@ private:
 	UDataAssetSpacecraft* PlayerSpacecraft;
 
 	void SetupVariable();
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	int LengthSpacecraftMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))

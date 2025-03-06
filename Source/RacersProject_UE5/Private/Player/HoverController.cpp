@@ -2,54 +2,45 @@
 
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 
-AHoverController::AHoverController(): PlayerSpacecraft(nullptr), AngularRotSpeed(0), ThrustSpeed(0),
-                                      SpinImpulseTopForce(0),
-                                      SpinReverseForce(0),
-                                      LateralForceReduction(0),
-                                      SpeedToForceFactor(0),
-                                      AngularSpeedToForceFactor(0),
-                                      Damping(0), Stifness(0)
-{
-	//Initialize();
+AHoverController::AHoverController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer), PlayerSpacecraft(nullptr), LengthSpacecraftMesh(0), AngularRotSpeed(0),
+	  ThrustSpeed(0), SpinImpulseTopForce(0), SpinReverseForce(0), LateralForceReduction(0),
+	  SpeedToForceFactor(0), AngularSpeedToForceFactor(0), Damping(0), Stifness(0)
+{    
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 
 void AHoverController::Initialize(int _Length)
 {
 	LengthSpacecraftMesh = _Length;
 	UE_LOG(LogTemp, Warning, TEXT("1 : %d"), LengthSpacecraftMesh);
-	if (LengthSpacecraftMesh < MeshesComponents.Num())
+
+	// Supprimer les éléments en trop
+	while (MeshesComponents.Num() > LengthSpacecraftMesh)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("2"));
-		for (int i = MeshesComponents.Num() - 1; i >= LengthSpacecraftMesh; --i)
+		UStaticMeshComponent* MeshComponent = MeshesComponents.Pop();
+		if (MeshComponent)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("3"));
-			UStaticMeshComponent* MeshComponent = MeshesComponents[i];
-            
-			if (MeshComponent != nullptr && MeshComponent->GetStaticMesh() == nullptr)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("4"));
-				MeshComponent->DestroyComponent();
-				MeshesComponents.RemoveAt(i);
-			}
+			MeshComponent->DestroyComponent();
 		}
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("5"));
-		for (int i = 0; i < LengthSpacecraftMesh; i++)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("6"));
-			UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("Main %d"), i));
-			MeshesComponents.Add(MeshComponent);
 
-			if (i == 0)
-			{
-				RootComponent = MeshesComponents[0];
-			}
-			else
-			{
-				MeshesComponents[i]->SetupAttachment(RootComponent);
-			}
+	// Ajouter les nouveaux composants
+	for (int i = 0; i < LengthSpacecraftMesh; i++)
+	{
+		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), *FString::Printf(TEXT("Main %d"), i));
+		MeshComponent->RegisterComponent();
+		MeshesComponents.Add(MeshComponent);
+
+		// Si c'est le premier élément, on l'assigne en RootComponent
+		if (i == 0)
+		{
+			RootComponent = MeshComponent;
+		}
+		else
+		{
+			// Tous les autres MeshComponents sont attachés au RootComponent
+			MeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 		}
 	}
 }
