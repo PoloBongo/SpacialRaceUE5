@@ -57,4 +57,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	float ThrustSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	float SpinImpulseTopForce;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	float SpinReverseForce;
 };
