@@ -15,7 +15,6 @@ void AHoverController::Initialize(int _Length)
 	LengthSpacecraftMesh = _Length;
 	UE_LOG(LogTemp, Warning, TEXT("1 : %d"), LengthSpacecraftMesh);
 
-	// Supprimer les éléments en trop
 	while (MeshesComponents.Num() > LengthSpacecraftMesh)
 	{
 		UStaticMeshComponent* MeshComponent = MeshesComponents.Pop();
@@ -25,21 +24,18 @@ void AHoverController::Initialize(int _Length)
 		}
 	}
 
-	// Ajouter les nouveaux composants
 	for (int i = 0; i < LengthSpacecraftMesh; i++)
 	{
 		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), *FString::Printf(TEXT("Main %d"), i));
 		MeshComponent->RegisterComponent();
 		MeshesComponents.Add(MeshComponent);
 
-		// Si c'est le premier élément, on l'assigne en RootComponent
 		if (i == 0)
 		{
 			RootComponent = MeshComponent;
 		}
 		else
 		{
-			// Tous les autres MeshComponents sont attachés au RootComponent
 			MeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 		}
 	}
