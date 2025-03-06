@@ -18,6 +18,11 @@ public:
 
 	void SetLengthSpacecraftMesh(int _Length);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Event")
+	void SetupInput();
+
+	void Initialize(int _Length);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,7 +35,7 @@ private:
 
 	void SetupVariable();
 
-	int LengthSpacecraftMesh = 11;
+	int LengthSpacecraftMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	float BoostMultiplier = 1.0;
@@ -61,4 +66,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property", meta=(AllowPrivateAccess="true"))
 	float Stifness;
+	
+	virtual void SetupInput_Implementation();
 };

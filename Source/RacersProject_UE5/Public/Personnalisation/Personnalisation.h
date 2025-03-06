@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class AHoverControllerShowRoom;
 class UTextBlock;
 class UButtonAvailableMesh;
 class UPlayerSpacecraft;
@@ -37,7 +38,10 @@ private:
 	TArray<UDataAssetSpacecraft*> DataAssetSpacecrafts;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
-	UPlayerSpacecraft* PlayerDataAssetSpacecrafts;
+	UDataAssetSpacecraft* PlayerDataAssetSpacecrafts;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	UPlayerSpacecraft* PlayerSpacecraftAsset;
 
 	void GetValidDataAssetSpacecraft(int _Index);
 	bool GetValidPlayerSpacecraft(UStaticMesh* TargetMesh) const;
@@ -50,6 +54,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UBackgroundBlur* LockSpacecraft;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	AHoverControllerShowRoom* HoverControllerShowRoom;
+
 	UFUNCTION(BlueprintCallable)
 	void CreateChildrenForDetailCustom(UVerticalBox* ListObject);
 
@@ -57,6 +64,7 @@ private:
 	void ShowOriginalSpacecraftBtn(UTextBlock* Text);
 
 	void ResetIsChooseSpacecraft();
+	void ResetColorBtn(UButtonAvailableMesh* NewButton);
 
 	void SetButtonGreen(FButtonStyle& ButtonStyle);
 	void SetButtonRed(FButtonStyle& ButtonStyle);

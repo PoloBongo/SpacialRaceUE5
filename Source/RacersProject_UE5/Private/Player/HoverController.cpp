@@ -10,23 +10,46 @@ AHoverController::AHoverController(): PlayerSpacecraft(nullptr), AngularRotSpeed
                                       AngularSpeedToForceFactor(0),
                                       Damping(0), Stifness(0)
 {
+	//Initialize();
 }
 
-AHoverController::AHoverController(int _Length): PlayerSpacecraft(nullptr)
+void AHoverController::Initialize(int _Length)
 {
 	LengthSpacecraftMesh = _Length;
-	for (int i = 0; i < LengthSpacecraftMesh; i++)
+	UE_LOG(LogTemp, Warning, TEXT("1 : %d"), LengthSpacecraftMesh);
+	if (LengthSpacecraftMesh < MeshesComponents.Num())
 	{
-		UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("Main %d"), i));
-		MeshesComponents.Add(MeshComponent);
-
-		if (i == 0)
+		UE_LOG(LogTemp, Warning, TEXT("2"));
+		for (int i = MeshesComponents.Num() - 1; i >= LengthSpacecraftMesh; --i)
 		{
-			RootComponent = MeshesComponents[0];
+			UE_LOG(LogTemp, Warning, TEXT("3"));
+			UStaticMeshComponent* MeshComponent = MeshesComponents[i];
+            
+			if (MeshComponent != nullptr && MeshComponent->GetStaticMesh() == nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("4"));
+				MeshComponent->DestroyComponent();
+				MeshesComponents.RemoveAt(i);
+			}
 		}
-		else
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("5"));
+		for (int i = 0; i < LengthSpacecraftMesh; i++)
 		{
-			MeshesComponents[i]->SetupAttachment(RootComponent);
+			UE_LOG(LogTemp, Warning, TEXT("6"));
+			UStaticMeshComponent* MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(*FString::Printf(TEXT("Main %d"), i));
+			MeshesComponents.Add(MeshComponent);
+
+			if (i == 0)
+			{
+				RootComponent = MeshesComponents[0];
+			}
+			else
+			{
+				MeshesComponents[i]->SetupAttachment(RootComponent);
+			}
 		}
 	}
 }
@@ -52,6 +75,7 @@ void AHoverController::BeginPlay()
 		Index++;
 	}
 
+	SetupInput();
 	SetupVariable();
 }
 
@@ -66,6 +90,11 @@ void AHoverController::SetupVariable()
 	AngularSpeedToForceFactor = PlayerSpacecraft->AngularSpeedToForceFactor;
 	Damping = PlayerSpacecraft->Damping;
 	Stifness = PlayerSpacecraft->Stifness;
+}
+
+void AHoverController::SetupInput_Implementation()
+{
+	// nada, l'event est géré en blueprint
 }
 
 
