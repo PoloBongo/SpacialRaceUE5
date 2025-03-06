@@ -8,6 +8,7 @@
 #include "Components/VerticalBox.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 #include "Personnalisation/DataAsset/PlayerSpacecraft.h"
+#include "Player/HoverControllerShowRoom.h"
 
 APersonnalisation::APersonnalisation(): MaxIndex(0), PlayerDataAssetSpacecrafts(nullptr), ActualMaterial(nullptr),
                                         LockSpacecraft(nullptr),
@@ -55,7 +56,7 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 			LockSpacecraft->SetVisibility(ESlateVisibility::Hidden);
 			DataAssetSpacecrafts[_Index]->IsChoose = true;
 		}
-		ActualMaterial = PlayerDataAssetSpacecrafts->Material;
+		ActualMaterial = PlayerSpacecraftAsset->Material;
 	}
 }
 
@@ -70,7 +71,7 @@ void APersonnalisation::ShowOriginalSpacecraftBtn(UTextBlock* Text)
 	}
 	else
 	{
-		ActualMaterial = PlayerDataAssetSpacecrafts->Material;
+		ActualMaterial = PlayerSpacecraftAsset->Material;
 		Text->SetText(FText::FromString("Voir l'original"));
 	}
 }
@@ -115,6 +116,7 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		NewHorizontalBox->AddChild(NewComboBoxString);
 		ListObject->AddChild(NewHorizontalBox);
 
+		ResetColorBtn(NewButton);
 		NewComboBoxString->AddOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
 
 		for (const TPair<UMaterial*, bool>& MaterialPair : DataAssetSpacecrafts[Index]->SpacecraftMaterials)
@@ -128,25 +130,28 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		}
 
 		NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
-				
-		FButtonStyle ButtonStyle = NewButton->GetStyle();
 
-		for (int i = 0; i < PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Num(); i++)
+		for (const TPair<UStaticMesh*, bool>& BongoPair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
 		{
-			if (StaticMesh == PlayerDataAssetSpacecrafts->ActualPlayerMeshes[i])
+			UStaticMesh* TargetStaticMesh = BongoPair.Key;
+			FButtonStyle ButtonStyle = NewButton->GetStyle();
+			
+			if (StaticMesh == TargetStaticMesh)
 			{
 				SetButtonGreen(ButtonStyle);
 			}
-			else
-			{
-				SetButtonRed(ButtonStyle);
-			}
-			break;
+			NewButton->SetStyle(ButtonStyle);
 		}
-		NewButton->SetStyle(ButtonStyle);
 		ButtonsMeshes.Add(NewButton, StaticMesh);
 	}
 	AttachClickedEvent();
+}
+
+void APersonnalisation::ResetColorBtn(UButtonAvailableMesh* NewButton)
+{
+	FButtonStyle ButtonStyle = NewButton->GetStyle();
+	SetButtonRed(ButtonStyle);
+	NewButton->SetStyle(ButtonStyle);
 }
 
 void APersonnalisation::TriggerButtonClickedDelegate(UStaticMesh* SelectedMesh, UButtonAvailableMesh* SelectedButton)
@@ -180,7 +185,7 @@ bool APersonnalisation::GetValidPlayerSpacecraft(UStaticMesh* TargetMesh) const
 {
 	if (!PlayerDataAssetSpacecrafts) return false;
 
-	return PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Contains(TargetMesh);
+	return PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh);
 }
 
 void APersonnalisation::RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle)
@@ -192,20 +197,22 @@ void APersonnalisation::RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* Target
 		if (TargetMesh->GetName() == BlacklistBodyRemoved[i]) return;
 	}
 
-	if (PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Contains(TargetMesh))
+	if (PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
 	{
-		PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Remove(TargetMesh);
+		PlayerDataAssetSpacecrafts->SpacecraftMeshes.Remove(TargetMesh);
+		HoverControllerShowRoom->DetachMeshComponents(TargetMesh);
 		SetButtonRed(ButtonStyle);
 	}
 }
 
 void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle)
 {
-	if (!PlayerDataAssetSpacecrafts) return;
+	if (!PlayerDataAssetSpacecrafts && !HoverControllerShowRoom) return;
 	
-	if (!PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Contains(TargetMesh))
+	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
 	{
-		PlayerDataAssetSpacecrafts->ActualPlayerMeshes.Add(TargetMesh);
+		PlayerDataAssetSpacecrafts->SpacecraftMeshes.Add(TargetMesh);
+		HoverControllerShowRoom->SetupMeshComponents(TargetMesh);
 		SetButtonGreen(ButtonStyle);
 	}
 }

@@ -1,0 +1,26 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "HoverControllerShowRoom.generated.h"
+
+UCLASS()
+class RACERSPROJECT_UE5_API AHoverControllerShowRoom : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	AHoverControllerShowRoom();
+
+	void SetupMeshComponents(UStaticMesh* TargetMesh);
+	void DetachMeshComponents(UStaticMesh* TargetMesh);
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	UStaticMeshComponent* MainComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TArray<UStaticMeshComponent*> MeshComponents;
+};
