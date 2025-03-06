@@ -49,14 +49,29 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 		if (!DataAssetSpacecrafts[_Index]->Unlock)
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Visible);
-			ActualMaterial = PlayerDataAssetSpacecrafts->Material;
 		}
 		else
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Hidden);
-			ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
 			DataAssetSpacecrafts[_Index]->IsChoose = true;
 		}
+		ActualMaterial = PlayerDataAssetSpacecrafts->Material;
+	}
+}
+
+void APersonnalisation::ShowOriginalSpacecraftBtn(UTextBlock* Text)
+{
+	ShowOriginalSpacecraft = !ShowOriginalSpacecraft;
+
+	if (ShowOriginalSpacecraft)
+	{
+		ActualMaterial = DataAssetSpacecrafts[Index]->Material;
+		Text->SetText(FText::FromString("Voir mon Vaisseau"));
+	}
+	else
+	{
+		ActualMaterial = PlayerDataAssetSpacecrafts->Material;
+		Text->SetText(FText::FromString("Voir l'original"));
 	}
 }
 

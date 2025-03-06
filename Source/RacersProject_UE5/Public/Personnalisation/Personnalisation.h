@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class UTextBlock;
 class UButtonAvailableMesh;
 class UPlayerSpacecraft;
 class UVerticalBox;
@@ -30,6 +31,7 @@ private:
 
 	int Index = 0;
 	int MaxIndex;
+	bool ShowOriginalSpacecraft = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<UDataAssetSpacecraft*> DataAssetSpacecrafts;
@@ -50,6 +52,9 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateChildrenForDetailCustom(UVerticalBox* ListObject);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowOriginalSpacecraftBtn(UTextBlock* Text);
 
 	void ResetIsChooseSpacecraft();
 
