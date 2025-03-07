@@ -7,6 +7,14 @@ AHoverControllerShowRoom::AHoverControllerShowRoom(): MainComponent(nullptr)
 void AHoverControllerShowRoom::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (int i = 0; i < MeshComponents.Num(); i++)
+	{
+		if (MeshComponents[i] != nullptr)
+		{
+			MeshComponents[i]->SetStaticMesh(nullptr);
+		}
+	}
 }
 
 void AHoverControllerShowRoom::SetupMeshComponents(UStaticMesh* TargetMesh)

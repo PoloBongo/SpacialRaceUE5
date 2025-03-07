@@ -6,6 +6,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Personnalisation/SauvegardePersonnalisation.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 #include "Personnalisation/DataAsset/PlayerSpacecraft.h"
 #include "Player/HoverControllerShowRoom.h"
@@ -21,6 +22,17 @@ void APersonnalisation::BeginPlay()
 	Super::BeginPlay();
 	GetValidDataAssetSpacecraft(0);
 	MaxIndex = DataAssetSpacecrafts.Num() - 1;
+
+	// parcourir le load et selon lui setupAttachment
+	for (int i = 0; i < SauvegardePersonnalisation->GetArrayOfSave(); i++)
+	{
+		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(PlayerSpacecraftAsset->ActualPlayerMeshes[i]->GetName());
+		if(TargetStaticMesh == PlayerSpacecraftAsset->ActualPlayerMeshes[i]->GetName())
+		{
+			HoverControllerShowRoom->SetupMeshComponents(PlayerSpacecraftAsset->ActualPlayerMeshes[i]);
+		}
+	}
+	
 }
 
 void APersonnalisation::ArrowLeft()
@@ -50,13 +62,14 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 		if (!DataAssetSpacecrafts[_Index]->Unlock)
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Visible);
+			ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
 		}
 		else
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Hidden);
 			DataAssetSpacecrafts[_Index]->IsChoose = true;
+			ActualMaterial = PlayerSpacecraftAsset->Material;
 		}
-		ActualMaterial = PlayerSpacecraftAsset->Material;
 	}
 }
 
@@ -131,19 +144,19 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 
 		NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
 
-		for (const TPair<UStaticMesh*, bool>& BongoPair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
+		//for (const TPair<UStaticMesh*, bool>& BongoPair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
+		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(StaticMesh->GetName());
+		FButtonStyle ButtonStyle = NewButton->GetStyle();
+					
+		if (StaticMesh->GetName() == TargetStaticMesh)
 		{
-			UStaticMesh* TargetStaticMesh = BongoPair.Key;
-			FButtonStyle ButtonStyle = NewButton->GetStyle();
-			
-			if (StaticMesh == TargetStaticMesh)
-			{
-				SetButtonGreen(ButtonStyle);
-			}
-			NewButton->SetStyle(ButtonStyle);
+			SetButtonGreen(ButtonStyle);
+			EquipedMesh.Add(StaticMesh);
 		}
+		NewButton->SetStyle(ButtonStyle);
 		ButtonsMeshes.Add(NewButton, StaticMesh);
 	}
+	SauvegardePersonnalisation->SavePlayerMeshToFile(EquipedMesh);
 	AttachClickedEvent();
 }
 
@@ -202,6 +215,12 @@ void APersonnalisation::RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* Target
 		PlayerDataAssetSpacecrafts->SpacecraftMeshes.Remove(TargetMesh);
 		HoverControllerShowRoom->DetachMeshComponents(TargetMesh);
 		SetButtonRed(ButtonStyle);
+		// Save //
+		if (EquipedMesh.Contains(TargetMesh))
+		{
+			EquipedMesh.Remove(TargetMesh);
+			SauvegardePersonnalisation->SavePlayerMeshToFile(EquipedMesh);
+		}
 	}
 }
 
@@ -214,6 +233,12 @@ void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMes
 		PlayerDataAssetSpacecrafts->SpacecraftMeshes.Add(TargetMesh);
 		HoverControllerShowRoom->SetupMeshComponents(TargetMesh);
 		SetButtonGreen(ButtonStyle);
+		// Save //
+		if (!EquipedMesh.Contains(TargetMesh))
+		{
+			EquipedMesh.Add(TargetMesh);
+			SauvegardePersonnalisation->SavePlayerMeshToFile(EquipedMesh);
+		}
 	}
 }
 
