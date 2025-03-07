@@ -25,7 +25,7 @@ void APersonnalisation::BeginPlay()
 	MaxIndex = DataAssetSpacecrafts.Num() - 1;
 }
 
-void APersonnalisation::SetupAttachmentToHoverShowRoom()
+void APersonnalisation::SetupAttachmentToHoverShowRoom() const
 {
 	for (const TPair<UStaticMesh*, bool>& Pair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
 	{

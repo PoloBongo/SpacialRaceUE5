@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "HoverController.generated.h"
 
+class UPossibilityDataCombinaison;
 class UDataAssetSpacecraft;
 
 UCLASS()
@@ -23,6 +24,9 @@ public:
 	void Initialize(int _Length);
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combinaison", meta=(AllowPrivateAccess="true"))
+	TArray<UPossibilityDataCombinaison*> PossibilityDataCombinaison;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<UStaticMeshComponent*> MeshesComponents;
 	

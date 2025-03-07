@@ -4,7 +4,10 @@
 			"Name": "SM_Vortex_Body2"
 		},
 		{
-			"Name": "SM_Vortex_Engine1"
+			"Name": "SM_Vortex_Cockpit1"
+		},
+		{
+			"Name": "SM_Vortex_Cockpit2"
 		},
 		{
 			"Name": "SM_Vortex_Engine2"
@@ -13,7 +16,7 @@
 			"Name": "SM_Vortex_Engine3"
 		},
 		{
-			"Name": "SM_Vortex_Engine4"
+			"Name": "SM_Vortex_Piece1"
 		},
 		{
 			"Name": "SM_Vortex_Spoiler1"
@@ -22,13 +25,13 @@
 			"Name": "SM_Vortex_Spoiler2"
 		},
 		{
-			"Name": "SM_Vortex_Wing1"
-		},
-		{
-			"Name": "SM_Vortex_Wing2"
-		},
-		{
 			"Name": "SM_Vortex_Wing3"
+		},
+		{
+			"Name": "SM_Vortex_Wing4"
+		},
+		{
+			"Name": "SM_Vortex_Engine4"
 		}
 	]
 }

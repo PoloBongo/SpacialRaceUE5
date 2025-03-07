@@ -1,5 +1,6 @@
 #include "Personnalisation/SauvegardePersonnalisation.h"
 
+#include "Personnalisation/Personnalisation.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 
 ASauvegardePersonnalisation::ASauvegardePersonnalisation()
@@ -92,7 +93,7 @@ int ASauvegardePersonnalisation::GetArrayOfSave() const
 	return -1;
 }
 
-void ASauvegardePersonnalisation::LoadMeshToTargetDataAsset(UDataAssetSpacecraft* DataAssetSpacecraft)
+void ASauvegardePersonnalisation::LoadMeshToTargetDataAsset(UDataAssetSpacecraft* DataAssetSpacecraft, APersonnalisation* Personnalisation)
 {
 	FString FileContent;
 	DataAssetSpacecraft->SpacecraftMeshes.Reset();
@@ -122,6 +123,8 @@ void ASauvegardePersonnalisation::LoadMeshToTargetDataAsset(UDataAssetSpacecraft
 						DataAssetSpacecraft->SpacecraftMeshes.Add(*FoundMesh);
 					}
 				}
+
+				Personnalisation->SetupAttachmentToHoverShowRoom();
 			}
 		}
 	}
