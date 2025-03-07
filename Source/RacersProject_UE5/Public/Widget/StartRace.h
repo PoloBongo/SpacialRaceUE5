@@ -23,4 +23,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UDataAssetSpacecraft* PlayerSpacecraft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	FVector SpawnPos;
 };
