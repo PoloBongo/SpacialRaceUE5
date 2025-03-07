@@ -22,9 +22,6 @@ public:
 
 	void Initialize(int _Length);
 
-protected:
-	virtual void BeginPlay() override;
-
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<UStaticMeshComponent*> MeshesComponents;
@@ -33,6 +30,7 @@ private:
 	UDataAssetSpacecraft* PlayerSpacecraft;
 
 	void SetupVariable();
+	void SetupAttachmentMeshToHover();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	int LengthSpacecraftMesh;

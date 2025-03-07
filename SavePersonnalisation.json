@@ -16,6 +16,15 @@
 			"Name": "SM_Vortex_Engine4"
 		},
 		{
+			"Name": "SM_Vortex_Engine6"
+		},
+		{
+			"Name": "SM_Vortex_Spoiler1"
+		},
+		{
+			"Name": "SM_Vortex_Spoiler2"
+		},
+		{
 			"Name": "SM_Vortex_Wing1"
 		},
 		{
@@ -23,12 +32,6 @@
 		},
 		{
 			"Name": "SM_Vortex_Wing3"
-		},
-		{
-			"Name": "SM_Vortex_Spoiler2"
-		},
-		{
-			"Name": "SM_Vortex_Spoiler1"
 		}
 	]
 }

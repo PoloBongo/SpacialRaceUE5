@@ -31,6 +31,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void ArrowRight();
 
+	UFUNCTION(BlueprintCallable)
+	void SetupAttachmentToHoverShowRoom();
+
 	int Index = 0;
 	int MaxIndex;
 	bool ShowOriginalSpacecraft = false;

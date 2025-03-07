@@ -11,9 +11,10 @@
 #include "Personnalisation/DataAsset/PlayerSpacecraft.h"
 #include "Player/HoverControllerShowRoom.h"
 
-APersonnalisation::APersonnalisation(): MaxIndex(0), PlayerDataAssetSpacecrafts(nullptr), ActualMaterial(nullptr),
-                                        LockSpacecraft(nullptr),
-                                        CustomizationWidget(nullptr)
+APersonnalisation::APersonnalisation(): MaxIndex(0), PlayerDataAssetSpacecrafts(nullptr),
+                                        PlayerSpacecraftAsset(nullptr), ActualMaterial(nullptr),
+                                        LockSpacecraft(nullptr), HoverControllerShowRoom(nullptr),
+                                        CustomizationWidget(nullptr), SauvegardePersonnalisation(nullptr)
 {
 }
 
@@ -22,17 +23,21 @@ void APersonnalisation::BeginPlay()
 	Super::BeginPlay();
 	GetValidDataAssetSpacecraft(0);
 	MaxIndex = DataAssetSpacecrafts.Num() - 1;
+}
 
-	// parcourir le load et selon lui setupAttachment
-	for (int i = 0; i < SauvegardePersonnalisation->GetArrayOfSave(); i++)
+void APersonnalisation::SetupAttachmentToHoverShowRoom()
+{
+	for (const TPair<UStaticMesh*, bool>& Pair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
 	{
-		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(PlayerSpacecraftAsset->ActualPlayerMeshes[i]->GetName());
-		if(TargetStaticMesh == PlayerSpacecraftAsset->ActualPlayerMeshes[i]->GetName())
+		UStaticMesh* StaticMesh = Pair.Key;
+		FString NameStaticMesh = StaticMesh->GetName();
+
+		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(NameStaticMesh);
+		if(TargetStaticMesh == NameStaticMesh)
 		{
-			HoverControllerShowRoom->SetupMeshComponents(PlayerSpacecraftAsset->ActualPlayerMeshes[i]);
+			HoverControllerShowRoom->SetupMeshComponents(StaticMesh);
 		}
 	}
-	
 }
 
 void APersonnalisation::ArrowLeft()
@@ -144,7 +149,6 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 
 		NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
 
-		//for (const TPair<UStaticMesh*, bool>& BongoPair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
 		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(StaticMesh->GetName());
 		FButtonStyle ButtonStyle = NewButton->GetStyle();
 					

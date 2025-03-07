@@ -21,6 +21,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	UMaterial* InitialMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
+	UDataAssetSpacecraft* OriginalSpacecraft;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	TMap<UStaticMesh*, bool> SpacecraftMeshes;
