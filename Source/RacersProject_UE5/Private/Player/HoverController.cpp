@@ -8,12 +8,12 @@ AHoverController::AHoverController(const FObjectInitializer& ObjectInitializer)
 	  SpeedToForceFactor(0), AngularSpeedToForceFactor(0), Damping(0), Stifness(0)
 {    
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent->SetMobility(EComponentMobility::Movable);
 }
 
 void AHoverController::Initialize(int _Length)
 {
 	LengthSpacecraftMesh = _Length;
-	UE_LOG(LogTemp, Warning, TEXT("1 : %d"), LengthSpacecraftMesh);
 
 	while (MeshesComponents.Num() > LengthSpacecraftMesh)
 	{
@@ -23,32 +23,43 @@ void AHoverController::Initialize(int _Length)
 			MeshComponent->DestroyComponent();
 		}
 	}
-
-	for (int i = MeshesComponents.Num(); i < LengthSpacecraftMesh; i++)
+	
+	for (int i = MeshesComponents.Num(); i <= LengthSpacecraftMesh; i++)
 	{
 		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), *FString::Printf(TEXT("Main %d"), i));
-		MeshComponent->RegisterComponent();
-		MeshesComponents.Add(MeshComponent);
 
-		if (i == 0)
+		if (!MeshComponent) return;
+
+		MeshComponent->RegisterComponent();
+		AddInstanceComponent(MeshComponent);
+
+		if (i == 0 && MeshesComponents.Num() == 0)
 		{
+			MeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 			RootComponent = MeshComponent;
 		}
 		else
 		{
-			MeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+			MeshComponent->AttachToComponent(MeshesComponents[0], FAttachmentTransformRules::KeepRelativeTransform);
 		}
+
+		MeshesComponents.Add(MeshComponent);
 	}
+
+	SetupAttachmentMeshToHover();
 }
 
-void AHoverController::BeginPlay()
-{
-	Super::BeginPlay();
-	
+void AHoverController::SetupAttachmentMeshToHover()
+{	
 	int Index = 0;
+	
 	for (const TPair<UStaticMesh*, bool>& Pair : PlayerSpacecraft->SpacecraftMeshes)
 	{
 		UStaticMesh* StaticMesh = Pair.Key;
+		
+		if (!MeshesComponents.IsValidIndex(Index)) return;
+		
+		UE_LOG(LogTemp, Warning, TEXT("1 : %d\n2 : %s"), Index, *StaticMesh->GetName());
 		
 		UStaticMeshComponent* TargetMeshComponent = MeshesComponents[Index];
 		TargetMeshComponent->SetStaticMesh(StaticMesh);
