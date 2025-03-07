@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "SauvegardePersonnalisation.generated.h"
 
+class UDataAssetSpacecraft;
+
 UCLASS()
 class RACERSPROJECT_UE5_API ASauvegardePersonnalisation : public AActor
 {
@@ -11,14 +13,17 @@ class RACERSPROJECT_UE5_API ASauvegardePersonnalisation : public AActor
 	
 public:	
 	ASauvegardePersonnalisation();
-	void SavePlayerMeshToFile(TArray<UStaticMesh*> MeshesSpacecraft);
+	void SavePlayerMeshToFile(TArray<UStaticMesh*> MeshesSpacecraft) const;
 	FString LoadPlayerMeshFromFile(FString OriginalMesh) const;
 	int GetArrayOfSave() const;
-
+	
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UFUNCTION(BlueprintCallable)
+	void LoadMeshToTargetDataAsset(UDataAssetSpacecraft* DataAssetSpacecraft);
+	
 	FString SaveDirectory = FPaths::ProjectDir();
 	FString SaveFilePath = SaveDirectory / TEXT("SavePersonnalisation.json");
 };

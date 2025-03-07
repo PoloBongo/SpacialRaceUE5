@@ -149,7 +149,6 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 
 		NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
 
-		//for (const TPair<UStaticMesh*, bool>& BongoPair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
 		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(StaticMesh->GetName());
 		FButtonStyle ButtonStyle = NewButton->GetStyle();
 					
