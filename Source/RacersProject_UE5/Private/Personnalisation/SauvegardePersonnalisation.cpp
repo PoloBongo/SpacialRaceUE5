@@ -1,5 +1,7 @@
 #include "Personnalisation/SauvegardePersonnalisation.h"
 
+#include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
+
 ASauvegardePersonnalisation::ASauvegardePersonnalisation()
 {
 
@@ -11,25 +13,34 @@ void ASauvegardePersonnalisation::BeginPlay()
 	
 }
 
-void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> MeshesSpacecraft)
+void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> MeshesSpacecraft) const
 {
 	TArray<TSharedPtr<FJsonValue>> JsonItems;
+	TSet<FString> UniqueMeshNames;
 
 	for (UStaticMesh* Mesh : MeshesSpacecraft)
 	{
-		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-		JsonObject->SetStringField(TEXT("Name"), Mesh->GetName());
-		JsonItems.Add(MakeShareable(new FJsonValueObject(JsonObject)));
+		FString MeshName = Mesh->GetName();
+
+		if (!UniqueMeshNames.Contains(MeshName))
+		{
+			UniqueMeshNames.Add(MeshName);
+
+			TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+			JsonObject->SetStringField(TEXT("Name"), MeshName);
+			JsonItems.Add(MakeShareable(new FJsonValueObject(JsonObject)));
+		}
 	}
+
 	TSharedPtr<FJsonObject> RootObject = MakeShareable(new FJsonObject());
 	RootObject->SetArrayField(TEXT("StockActualMeshPlayer"), JsonItems);
 
 	FString OutputString;
 	TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutputString);
 	FJsonSerializer::Serialize(RootObject.ToSharedRef(), JsonWriter);
-	
+
 	FFileHelper::SaveStringToFile(OutputString, *SaveFilePath);
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("Save File Path: %s"), *SaveFilePath);
 }
 
@@ -79,4 +90,39 @@ int ASauvegardePersonnalisation::GetArrayOfSave() const
 		}
 	}
 	return -1;
+}
+
+void ASauvegardePersonnalisation::LoadMeshToTargetDataAsset(UDataAssetSpacecraft* DataAssetSpacecraft)
+{
+	FString FileContent;
+	DataAssetSpacecraft->SpacecraftMeshes.Reset();
+
+	if (FFileHelper::LoadFileToString(FileContent, *SaveFilePath))
+	{
+		TSharedPtr<FJsonObject> RootObject;
+		TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(FileContent);
+
+		if (FJsonSerializer::Deserialize(JsonReader, RootObject) && RootObject.IsValid())
+		{
+			const TArray<TSharedPtr<FJsonValue>>& JsonItems = RootObject->GetArrayField(TEXT("StockActualMeshPlayer"));
+
+			if (JsonItems.Num() > 0)
+			{
+				TMap<FString, UStaticMesh*> MeshMap;
+				for (const TPair<UStaticMesh*, bool>& Pair : DataAssetSpacecraft->OriginalSpacecraft->SpacecraftMeshes)
+				{
+					MeshMap.Add(Pair.Key->GetName(), Pair.Key);
+				}
+
+				for (const TSharedPtr<FJsonValue>& JsonValue : JsonItems)
+				{
+					FString MeshName = JsonValue->AsObject()->GetStringField(TEXT("Name"));
+					if (UStaticMesh** FoundMesh = MeshMap.Find(MeshName))
+					{
+						DataAssetSpacecraft->SpacecraftMeshes.Add(*FoundMesh);
+					}
+				}
+			}
+		}
+	}
 }
