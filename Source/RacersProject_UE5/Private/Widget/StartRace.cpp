@@ -4,14 +4,11 @@
 #include "Player/HoverController.h"
 
 void UStartRace::StartRace()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Clicked with %d"), PlayerSpacecraft->SpacecraftMeshes.Num())
-
-	AHoverController* SpawnHoverController = GetWorld()->SpawnActor<AHoverController>(HoverController, SpawnPos, FRotator::ZeroRotator);
+{	
+	AHoverController* SpawnHoverController = GetWorld()->SpawnActor<AHoverController>(HoverController, 	FVector(0.0, 0.0, 0.0), FRotator::ZeroRotator);
 
 	if (SpawnHoverController && PlayerSpacecraft)
 	{
-		SpawnHoverController->SetActorLocation(SpawnPos);
 		SpawnHoverController->SetLengthSpacecraftMesh(PlayerSpacecraft->SpacecraftMeshes.Num());
 		SpawnHoverController->Initialize(PlayerSpacecraft->SpacecraftMeshes.Num());
 	}
