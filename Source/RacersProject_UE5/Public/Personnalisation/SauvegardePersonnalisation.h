@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "SauvegardePersonnalisation.generated.h"
 
+class APersonnalisation;
 class UDataAssetSpacecraft;
 
 UCLASS()
@@ -22,7 +23,7 @@ protected:
 
 private:
 	UFUNCTION(BlueprintCallable)
-	void LoadMeshToTargetDataAsset(UDataAssetSpacecraft* DataAssetSpacecraft);
+	void LoadMeshToTargetDataAsset(UDataAssetSpacecraft* DataAssetSpacecraft, APersonnalisation* Personnalisation);
 	
 	FString SaveDirectory = FPaths::ProjectDir();
 	FString SaveFilePath = SaveDirectory / TEXT("SavePersonnalisation.json");

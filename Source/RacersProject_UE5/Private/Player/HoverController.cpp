@@ -1,5 +1,6 @@
 #include "Player/HoverController.h"
 
+#include "Personnalisation/PossibilityDataCombinaison.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 
 AHoverController::AHoverController(const FObjectInitializer& ObjectInitializer)
@@ -79,15 +80,23 @@ void AHoverController::SetupAttachmentMeshToHover()
 
 void AHoverController::SetupVariable()
 {
-	AngularRotSpeed = PlayerSpacecraft->AngularRotSpeed;
-	ThrustSpeed = PlayerSpacecraft->ThrustSpeed;
-	SpinImpulseTopForce = PlayerSpacecraft->SpinImpulseTopForce;
-	SpinReverseForce = PlayerSpacecraft->SpinReverseForce;
-	LateralForceReduction = PlayerSpacecraft->LateralForceReduction;
-	SpeedToForceFactor = PlayerSpacecraft->SpeedToForceFactor;
-	AngularSpeedToForceFactor = PlayerSpacecraft->AngularSpeedToForceFactor;
-	Damping = PlayerSpacecraft->Damping;
-	Stifness = PlayerSpacecraft->Stifness;
+	for (int i = 0; i < PossibilityDataCombinaison.Num(); i++)
+	{
+		if (PossibilityDataCombinaison[i]->NumbersOfMesh == PlayerSpacecraft->SpacecraftMeshes.Num())
+		{
+			AngularRotSpeed = PossibilityDataCombinaison[i]->AngularRotSpeed;
+			ThrustSpeed = PossibilityDataCombinaison[i]->ThrustSpeed;
+			SpinImpulseTopForce = PossibilityDataCombinaison[i]->SpinImpulseTopForce;
+			SpinReverseForce = PossibilityDataCombinaison[i]->SpinReverseForce;
+			LateralForceReduction = PossibilityDataCombinaison[i]->LateralForceReduction;
+			SpeedToForceFactor = PossibilityDataCombinaison[i]->SpeedToForceFactor;
+			AngularSpeedToForceFactor = PossibilityDataCombinaison[i]->AngularSpeedToForceFactor;
+			Damping = PossibilityDataCombinaison[i]->Damping;
+			Stifness = PossibilityDataCombinaison[i]->Stifness;
+
+			break;
+		}
+	}
 }
 
 void AHoverController::SetupInput_Implementation()

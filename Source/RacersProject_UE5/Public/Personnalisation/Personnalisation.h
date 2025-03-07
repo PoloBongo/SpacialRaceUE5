@@ -21,6 +21,8 @@ class RACERSPROJECT_UE5_API APersonnalisation : public AActor
 public:	
 	APersonnalisation();
 
+	void SetupAttachmentToHoverShowRoom() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,10 +32,7 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void ArrowRight();
-
-	UFUNCTION(BlueprintCallable)
-	void SetupAttachmentToHoverShowRoom();
-
+	
 	int Index = 0;
 	int MaxIndex;
 	bool ShowOriginalSpacecraft = false;
