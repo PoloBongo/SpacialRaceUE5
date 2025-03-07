@@ -24,7 +24,7 @@ void AHoverController::Initialize(int _Length)
 		}
 	}
 
-	for (int i = 0; i < LengthSpacecraftMesh; i++)
+	for (int i = MeshesComponents.Num(); i < LengthSpacecraftMesh; i++)
 	{
 		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), *FString::Printf(TEXT("Main %d"), i));
 		MeshComponent->RegisterComponent();

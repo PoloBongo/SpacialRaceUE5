@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class ASauvegardePersonnalisation;
 class AHoverControllerShowRoom;
 class UTextBlock;
 class UButtonAvailableMesh;
@@ -86,4 +87,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TMap<UButtonAvailableMesh*, UStaticMesh*> ButtonsMeshes;
+	
+	/* Save Personnalisation Part */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Personnalisation Save", meta=(AllowPrivateAccess="true"))
+	ASauvegardePersonnalisation* SauvegardePersonnalisation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Personnalisation Save", meta=(AllowPrivateAccess="true"))
+	TArray<UStaticMesh*> EquipedMesh;
 };

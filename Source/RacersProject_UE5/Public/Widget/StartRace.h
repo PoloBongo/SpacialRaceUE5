@@ -4,7 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "StartRace.generated.h"
 
-class UDataAssetSpacecraft;
+class ASauvegardePersonnalisation;
 class AHoverController;
 /**
  * 
@@ -22,8 +22,9 @@ private:
 	TSubclassOf<AHoverController> HoverController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
-	UDataAssetSpacecraft* PlayerSpacecraft;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	FVector SpawnPos;
+
+	/* Save Personnalisation Part */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Personnalisation Save", meta=(AllowPrivateAccess="true"))
+	ASauvegardePersonnalisation* SauvegardePersonnalisation;
 };
