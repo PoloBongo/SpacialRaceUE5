@@ -10,6 +10,7 @@
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 #include "Personnalisation/DataAsset/PlayerSpacecraft.h"
 #include "Player/HoverControllerShowRoom.h"
+#include "Widget/PersonnalisationComboBoxString.h"
 
 APersonnalisation::APersonnalisation(): MaxIndex(0), PlayerDataAssetSpacecrafts(nullptr),
                                         PlayerSpacecraftAsset(nullptr), ActualMaterial(nullptr),
@@ -28,7 +29,7 @@ void APersonnalisation::BeginPlay()
 
 void APersonnalisation::SetupAttachmentToHoverShowRoom() const
 {
-	for (const TPair<UStaticMesh*, bool>& Pair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
+	for (const TPair<UStaticMesh*, FVector>& Pair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
 	{
 		UStaticMesh* StaticMesh = Pair.Key;
 		FString NameStaticMesh = StaticMesh->GetName();
@@ -122,16 +123,18 @@ void APersonnalisation::ResetIsChooseSpacecraft()
 
 void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 {
-	if (!ListObject && !NewButtonClass) return;
+	if (!ListObject || !NewButtonClass || !NewComboBoxClass) return;
 
 	ButtonsMeshes.Reset();
+	ComboBoxStringArray.Reset();
 	ListObject->ClearChildren();
 	
 	if (!DataAssetSpacecrafts[Index]->IsChoose) return;
 
-	for (const TPair<UStaticMesh*, bool>& Pair : DataAssetSpacecrafts[Index]->SpacecraftMeshes)
+	for (const TPair<UStaticMesh*, FVector>& Pair : DataAssetSpacecrafts[Index]->SpacecraftMeshes)
 	{
 		UStaticMesh* StaticMesh = Pair.Key;
+		FVector SpawnPos = Pair.Value;
 
 		if (!StaticMesh) return;
 
@@ -140,7 +143,7 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		UHorizontalBox* NewHorizontalBox = NewObject<UHorizontalBox>(ListObject);
 		UButtonAvailableMesh* NewButton = NewObject<UButtonAvailableMesh>(this, NewButtonClass);
 		UTextBlock* NewTextBlock = NewObject<UTextBlock>(NewButton);
-		UComboBoxString* NewComboBoxString = NewObject<UComboBoxString>(NewHorizontalBox);
+		UPersonnalisationComboBoxString* NewComboBoxString = NewObject<UPersonnalisationComboBoxString>(this, NewComboBoxClass);
 
 		NewTextBlock->SetText(FText::FromString(MeshName));
 
@@ -171,13 +174,35 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		{
 			SetButtonGreen(ButtonStyle);
 			EquipedMesh.Add(StaticMesh);
+			NewHorizontalBox->Rename(*StaticMesh->GetName());
+			PlayerDataAssetSpacecrafts->SpacecraftMeshes[StaticMesh] = SpawnPos;
 		}
 		NewButton->SetStyle(ButtonStyle);
 		ButtonsMeshes.Add(NewButton, StaticMesh);
+		ComboBoxStringArray.Add(NewComboBoxString, StaticMesh);
 	}
 	SauvegardePersonnalisation->SavePlayerMeshToFile(EquipedMesh);
 	AttachClickedEvent();
+	AttachSelectionChangedEvent();
 }
+
+void APersonnalisation::SetupPosForEachMeshPart()
+{
+	for (const TPair<UStaticMesh*, FVector>& Pair : DataAssetSpacecrafts[Index]->SpacecraftMeshes)
+	{
+		UStaticMesh* StaticMesh = Pair.Key;
+		FVector SpawnPos = Pair.Value;
+
+		if (!StaticMesh) return;
+		
+		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(StaticMesh->GetName());
+		if (StaticMesh->GetName() == TargetStaticMesh)
+		{
+			PlayerDataAssetSpacecrafts->SpacecraftMeshes[StaticMesh] = SpawnPos;
+		}
+	}
+}
+
 
 void APersonnalisation::ResetColorBtn(UButtonAvailableMesh* NewButton)
 {
@@ -247,9 +272,36 @@ void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMes
 {
 	if (!PlayerDataAssetSpacecrafts && !HoverControllerShowRoom) return;
 	
-	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
+	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh) && PlayerDataAssetSpacecrafts->OriginalSpacecraft->SpacecraftMeshes.Contains(TargetMesh))
 	{
-		PlayerDataAssetSpacecrafts->SpacecraftMeshes.Add(TargetMesh);
+		bool IsEngine = CheckOneEngineOnSpaceCraft(TargetMesh);
+		bool IsCockpit = CheckOneCockPitOnSpaceCraft(TargetMesh);
+		
+		if (IsEngine)
+		{
+			for (const TPair<UStaticMesh*, FVector>& Pair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
+			{
+				if (ListEngines.Contains(Pair.Key->GetName()))
+				{
+					return;
+				}
+			}
+		}
+		
+		if (IsCockpit)
+		{
+			for (const TPair<UStaticMesh*, FVector>& Pair : PlayerDataAssetSpacecrafts->SpacecraftMeshes)
+			{
+				if (ListCockpits.Contains(Pair.Key->GetName()))
+				{
+					return;
+				}
+			}
+		}
+
+		FVector DefaultLocation = PlayerDataAssetSpacecrafts->OriginalSpacecraft->SpacecraftMeshes[TargetMesh];
+		
+		PlayerDataAssetSpacecrafts->SpacecraftMeshes.Add(TargetMesh, DefaultLocation);
 		HoverControllerShowRoom->SetupMeshComponents(TargetMesh);
 		SetButtonGreen(ButtonStyle);
 		// Save //
@@ -259,6 +311,16 @@ void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMes
 			SauvegardePersonnalisation->SavePlayerMeshToFile(EquipedMesh);
 		}
 	}
+}
+
+bool APersonnalisation::CheckOneEngineOnSpaceCraft(const UStaticMesh* TargetMesh) const
+{
+	return ListEngines.Contains(TargetMesh->GetName());
+}
+
+bool APersonnalisation::CheckOneCockPitOnSpaceCraft(const UStaticMesh* TargetMesh) const
+{
+	return ListCockpits.Contains(TargetMesh->GetName());
 }
 
 void APersonnalisation::SetButtonGreen(FButtonStyle& ButtonStyle)
@@ -273,4 +335,48 @@ void APersonnalisation::SetButtonRed(FButtonStyle& ButtonStyle)
 	ButtonStyle.Normal.TintColor = FSlateColor(FLinearColor::Red);
 	ButtonStyle.Hovered.TintColor = FSlateColor(FLinearColor::Red);
 	ButtonStyle.Pressed.TintColor = FSlateColor(FLinearColor::Red);
+}
+
+void APersonnalisation::AttachSelectionChangedEvent() const
+{
+	if (UFunction* BindingTargetSelectionChangedFunction = CustomizationWidget->FindFunction(TEXT("BindingTargetSelectionChanged")))
+	{        
+		CustomizationWidget->ProcessEvent(BindingTargetSelectionChangedFunction, nullptr);
+	}
+}
+
+void APersonnalisation::TriggerSelectionChangedDelegate(FString SelectionItem, UStaticMesh* SelectedMesh)
+{
+	if (SelectionItem.IsEmpty() || !SelectedMesh || !PlayerDataAssetSpacecrafts) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Nom : %s"), *SelectionItem);
+	
+	UMaterial** FoundMaterial = AllAvailableMaterials.FindByPredicate([&](UMaterial* Mat)
+	{
+		return Mat && Mat->GetName() == SelectionItem;
+	});
+
+	if (FoundMaterial)
+	{
+		UMaterial* TargetMaterial = *FoundMaterial;
+		if (TargetMaterial && !GetValidPlayerSpacecraft(SelectedMesh))
+		{
+			SwitchMaterialFromPlayerSpacecraft(SelectedMesh, TargetMaterial);
+		}
+	}
+}
+
+void APersonnalisation::SwitchMaterialFromPlayerSpacecraft(UStaticMesh* TargetMesh, UMaterial* TargetMaterial) const
+{
+	if (!PlayerDataAssetSpacecrafts && !HoverControllerShowRoom) return;
+	
+	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
+	{		
+		HoverControllerShowRoom->SetupMeshComponents(TargetMesh);
+		// Save //
+		if (!EquipedMesh.Contains(TargetMesh))
+		{
+			SauvegardePersonnalisation->SaveMaterialForMesh(TargetMesh, TargetMaterial);
+		}
+	}
 }

@@ -26,7 +26,7 @@ public:
 	UDataAssetSpacecraft* OriginalSpacecraft;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
-	TMap<UStaticMesh*, bool> SpacecraftMeshes;
+	TMap<UStaticMesh*, FVector> SpacecraftMeshes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 	TMap<UMaterial*, bool> SpacecraftMaterials;

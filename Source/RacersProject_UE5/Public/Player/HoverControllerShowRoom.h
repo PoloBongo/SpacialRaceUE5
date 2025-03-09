@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "HoverControllerShowRoom.generated.h"
 
+class UDataAssetSpacecraft;
+
 UCLASS()
 class RACERSPROJECT_UE5_API AHoverControllerShowRoom : public AActor
 {
@@ -23,4 +25,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<UStaticMeshComponent*> MeshComponents;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	UDataAssetSpacecraft* PlayerDataAssetSpacecrafts;
 };
