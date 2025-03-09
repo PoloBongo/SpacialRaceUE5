@@ -78,6 +78,15 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<FString> BlacklistBodyRemoved;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TArray<FString> ListEngines;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TArray<FString> ListCockpits;
+
+	bool CheckOneEngineOnSpaceCraft(const UStaticMesh* TargetMesh) const;
+	bool CheckOneCockPitOnSpaceCraft(const UStaticMesh* TargetMesh) const;
 	
 	/* Clicked Part */
 	UFUNCTION(BlueprintCallable, Category = "Button Delegate")
@@ -106,4 +115,7 @@ private:
 	TArray<UButton*> Buttons;
 
 	void ManageVisibilitiesButtons(bool IsVisible);
+
+	UFUNCTION(BlueprintCallable)
+	void SetupPosForEachMeshPart();
 };

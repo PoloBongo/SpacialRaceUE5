@@ -110,7 +110,7 @@ void ASauvegardePersonnalisation::LoadMeshToTargetDataAsset(UDataAssetSpacecraft
 			if (JsonItems.Num() > 0)
 			{
 				TMap<FString, UStaticMesh*> MeshMap;
-				for (const TPair<UStaticMesh*, bool>& Pair : DataAssetSpacecraft->OriginalSpacecraft->SpacecraftMeshes)
+				for (const TPair<UStaticMesh*, FVector>& Pair : DataAssetSpacecraft->OriginalSpacecraft->SpacecraftMeshes)
 				{
 					MeshMap.Add(Pair.Key->GetName(), Pair.Key);
 				}

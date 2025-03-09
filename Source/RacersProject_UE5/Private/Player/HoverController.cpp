@@ -54,9 +54,10 @@ void AHoverController::SetupAttachmentMeshToHover()
 {	
 	int Index = 0;
 	
-	for (const TPair<UStaticMesh*, bool>& Pair : PlayerSpacecraft->SpacecraftMeshes)
+	for (const TPair<UStaticMesh*, FVector>& Pair : PlayerSpacecraft->SpacecraftMeshes)
 	{
 		UStaticMesh* StaticMesh = Pair.Key;
+		FVector SpawnPos = Pair.Value;
 		
 		if (!MeshesComponents.IsValidIndex(Index)) return;
 		
@@ -66,17 +67,14 @@ void AHoverController::SetupAttachmentMeshToHover()
 		if (Index == 0)
 		{
 			TargetMeshComponent->SetSimulatePhysics(true);
-			TargetMeshComponent->SetMassScale(NAME_None, PlayerSpacecraft->Mass);
+			TargetMeshComponent->SetMassOverrideInKg(NAME_None, PlayerSpacecraft->Mass, true);
 		}
 		
-		if (StaticMesh->GetName() == "SM_Vortex_Engine2" && TargetMeshComponent->GetStaticMesh().GetName() == "SM_Vortex_Engine2")
-		{
-			TargetMeshComponent->SetRelativeLocation(FVector(-760.0, 0.0, 0.0));
-		}
-		else
-		{
-			TargetMeshComponent->SetRelativeLocation(FVector(0.0, 0.0, 0.0));
-		}
+		TargetMeshComponent->SetRelativeLocation(SpawnPos);
+
+		if (StaticMesh->GetName() == "SM_Vortex_Spoiler2") TargetMeshComponent->SetRelativeRotation(FRotator(0, 180.0, 0));
+		else if (StaticMesh->GetName() == "SM_Vortex_Engine4") TargetMeshComponent->SetRelativeRotation(FRotator(-90.0, 0, 0));
+		else TargetMeshComponent->SetRelativeRotation(FRotator(0, 0, 0));
 		
 		Index++;
 	}

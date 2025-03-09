@@ -1,5 +1,7 @@
 #include "Player/HoverControllerShowRoom.h"
 
+#include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
+
 AHoverControllerShowRoom::AHoverControllerShowRoom(): MainComponent(nullptr)
 {
 }
@@ -19,16 +21,22 @@ void AHoverControllerShowRoom::BeginPlay()
 
 void AHoverControllerShowRoom::SetupMeshComponents(UStaticMesh* TargetMesh)
 {
+	if (!PlayerDataAssetSpacecrafts || !TargetMesh) return;
+
+	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh)) return;
+
+	FVector SpawnPos = PlayerDataAssetSpacecrafts->OriginalSpacecraft->SpacecraftMeshes[TargetMesh];
+
 	for (UStaticMeshComponent* MeshComponent : MeshComponents)
 	{
 		if (MeshComponent != nullptr && MeshComponent->GetStaticMesh() == nullptr)
 		{
-			if (UStaticMesh* DefaultMesh = TargetMesh)
-			{
-					if (TargetMesh->GetName() == "SM_Vortex_Engine2") MeshComponent->SetRelativeLocation(FVector(-760.0, 0.0, 0.0));
-				MeshComponent->SetStaticMesh(DefaultMesh);
-				break;
-			}
+			MeshComponent->SetStaticMesh(TargetMesh);
+			MeshComponent->SetRelativeLocation(SpawnPos);
+			if (TargetMesh->GetName() == "SM_Vortex_Spoiler2") MeshComponent->SetRelativeRotation(FRotator(0, 180.0, 0));
+			else if (TargetMesh->GetName() == "SM_Vortex_Engine4") MeshComponent->SetRelativeRotation(FRotator(-90.0, 0, 0));
+			else MeshComponent->SetRelativeRotation(FRotator(0, 0, 0));
+			break;
 		}
 	}
 }
