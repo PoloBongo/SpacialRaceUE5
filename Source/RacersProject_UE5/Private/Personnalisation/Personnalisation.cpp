@@ -23,6 +23,7 @@ void APersonnalisation::BeginPlay()
 	Super::BeginPlay();
 	GetValidDataAssetSpacecraft(0);
 	MaxIndex = DataAssetSpacecrafts.Num() - 1;
+	ManageVisibilitiesButtons(true);
 }
 
 void APersonnalisation::SetupAttachmentToHoverShowRoom() const
@@ -68,15 +69,29 @@ void APersonnalisation::GetValidDataAssetSpacecraft(int _Index)
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Visible);
 			ActualMaterial = DataAssetSpacecrafts[_Index]->Material;
+			ManageVisibilitiesButtons(false);
 		}
 		else
 		{
 			LockSpacecraft->SetVisibility(ESlateVisibility::Hidden);
 			DataAssetSpacecrafts[_Index]->IsChoose = true;
 			ActualMaterial = PlayerSpacecraftAsset->Material;
+			ManageVisibilitiesButtons(true);
 		}
 	}
 }
+
+void APersonnalisation::ManageVisibilitiesButtons(const bool IsVisible)
+{
+	for (int i = 0; i < Buttons.Num(); i++)
+	{
+		if (Buttons[i])
+		{
+			Buttons[i]->SetVisibility(IsVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+		}
+	}
+}
+
 
 void APersonnalisation::ShowOriginalSpacecraftBtn(UTextBlock* Text)
 {

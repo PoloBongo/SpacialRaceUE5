@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class UButton;
 class ASauvegardePersonnalisation;
 class AHoverControllerShowRoom;
 class UTextBlock;
@@ -60,15 +61,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	AHoverControllerShowRoom* HoverControllerShowRoom;
 
+	/* Function to create all buttons and dropdown for each mesh and color */
 	UFUNCTION(BlueprintCallable)
 	void CreateChildrenForDetailCustom(UVerticalBox* ListObject);
 
+	/* Function to show Original Spacecraft with all meshes possibilities */
 	UFUNCTION(BlueprintCallable)
 	void ShowOriginalSpacecraftBtn(UTextBlock* Text);
 
 	void ResetIsChooseSpacecraft();
-	void ResetColorBtn(UButtonAvailableMesh* NewButton);
 
+	/* Color Button Red/Green Default = Red */
+	void ResetColorBtn(UButtonAvailableMesh* NewButton);
 	void SetButtonGreen(FButtonStyle& ButtonStyle);
 	void SetButtonRed(FButtonStyle& ButtonStyle);
 
@@ -96,4 +100,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Personnalisation Save", meta=(AllowPrivateAccess="true"))
 	TArray<UStaticMesh*> EquipedMesh;
+
+	/* Button to show/hidde when spacecraft switch */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI", meta=(AllowPrivateAccess="true"))
+	TArray<UButton*> Buttons;
+
+	void ManageVisibilitiesButtons(bool IsVisible);
 };
