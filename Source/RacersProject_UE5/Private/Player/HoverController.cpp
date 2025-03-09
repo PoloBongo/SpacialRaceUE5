@@ -60,8 +60,6 @@ void AHoverController::SetupAttachmentMeshToHover()
 		
 		if (!MeshesComponents.IsValidIndex(Index)) return;
 		
-		UE_LOG(LogTemp, Warning, TEXT("1 : %d\n2 : %s"), Index, *StaticMesh->GetName());
-		
 		UStaticMeshComponent* TargetMeshComponent = MeshesComponents[Index];
 		TargetMeshComponent->SetStaticMesh(StaticMesh);
 		
@@ -69,6 +67,15 @@ void AHoverController::SetupAttachmentMeshToHover()
 		{
 			TargetMeshComponent->SetSimulatePhysics(true);
 			TargetMeshComponent->SetMassScale(NAME_None, PlayerSpacecraft->Mass);
+		}
+		
+		if (StaticMesh->GetName() == "SM_Vortex_Engine2" && TargetMeshComponent->GetStaticMesh().GetName() == "SM_Vortex_Engine2")
+		{
+			TargetMeshComponent->SetRelativeLocation(FVector(-760.0, 0.0, 0.0));
+		}
+		else
+		{
+			TargetMeshComponent->SetRelativeLocation(FVector(0.0, 0.0, 0.0));
 		}
 		
 		Index++;
