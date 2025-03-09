@@ -19,7 +19,7 @@ struct FNotification
 };
 
 UCLASS()
-class REAPTHEUNDEAD_API AGameNotificationManager : public AActor
+class RACERSPROJECT_UE5_API AGameNotificationManager : public AActor
 {
 	GENERATED_BODY()
 	

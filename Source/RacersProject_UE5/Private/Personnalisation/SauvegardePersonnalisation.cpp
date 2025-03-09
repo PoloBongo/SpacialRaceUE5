@@ -129,3 +129,43 @@ void ASauvegardePersonnalisation::LoadMeshToTargetDataAsset(UDataAssetSpacecraft
 		}
 	}
 }
+
+void ASauvegardePersonnalisation::SaveMaterialForMesh(UStaticMesh* Mesh, UMaterialInterface* Material) const
+{
+	if (!Mesh || !Material) return;
+
+	FString MeshName = Mesh->GetName();
+	FString MaterialName = Material->GetName();
+
+	FString JsonContent;
+	if (FFileHelper::LoadFileToString(JsonContent, *SaveFilePath))
+	{
+		TSharedPtr<FJsonObject> RootObject;
+		TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonContent);
+
+		if (FJsonSerializer::Deserialize(JsonReader, RootObject) && RootObject.IsValid())
+		{
+			TArray<TSharedPtr<FJsonValue>> JsonItems = RootObject->GetArrayField(TEXT("StockActualMeshPlayer"));
+
+			for (TSharedPtr<FJsonValue>& Item : JsonItems)
+			{
+				TSharedPtr<FJsonObject> JsonObject = Item->AsObject();
+				if (JsonObject->GetStringField(TEXT("Name")) == MeshName)
+				{
+					JsonObject->SetStringField(TEXT("Material"), MaterialName);
+					break;
+				}
+			}
+
+			RootObject->SetArrayField(TEXT("StockActualMeshPlayer"), JsonItems);
+
+			FString OutputString;
+			TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutputString);
+			FJsonSerializer::Serialize(RootObject.ToSharedRef(), JsonWriter);
+
+			FFileHelper::SaveStringToFile(OutputString, *SaveFilePath);
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Updated material for mesh: %s"), *MeshName);
+}

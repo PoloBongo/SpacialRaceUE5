@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class UPersonnalisationComboBoxString;
 class UButton;
 class ASauvegardePersonnalisation;
 class AHoverControllerShowRoom;
@@ -51,9 +52,13 @@ private:
 	bool GetValidPlayerSpacecraft(UStaticMesh* TargetMesh) const;
 	void RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle);
 	void AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle);
+	void SwitchMaterialFromPlayerSpacecraft(UStaticMesh* TargetMesh, UMaterial* TargetMaterial) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UMaterial* ActualMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TArray<UMaterial*> AllAvailableMaterials;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UBackgroundBlur* LockSpacecraft;
@@ -87,6 +92,18 @@ private:
 
 	bool CheckOneEngineOnSpaceCraft(const UStaticMesh* TargetMesh) const;
 	bool CheckOneCockPitOnSpaceCraft(const UStaticMesh* TargetMesh) const;
+
+	/* Selection Changed Part */
+	UFUNCTION(BlueprintCallable, Category = "Button Delegate")
+	void TriggerSelectionChangedDelegate(FString SelectionItem = "M_Vortex_Yellow", UStaticMesh* SelectedMesh = nullptr);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TSubclassOf<UPersonnalisationComboBoxString> NewComboBoxClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TMap<UPersonnalisationComboBoxString*, UStaticMesh*> ComboBoxStringArray;
+
+	void AttachSelectionChangedEvent() const;
 	
 	/* Clicked Part */
 	UFUNCTION(BlueprintCallable, Category = "Button Delegate")
