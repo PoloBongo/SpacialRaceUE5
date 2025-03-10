@@ -30,7 +30,9 @@ void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> Mesh
             {
                 TArray<TSharedPtr<FJsonValue>> ExistingJsonItems = RootObject->GetArrayField(TEXT("StockActualMeshPlayer"));
                 TSet<FString> ExistingMeshNames;
+                TSet<FString> NewMeshNames;
 
+                // Stocker les noms de maillages existants dans la sauvegarde
                 for (const TSharedPtr<FJsonValue>& Item : ExistingJsonItems)
                 {
                     TSharedPtr<FJsonObject> JsonObject = Item->AsObject();
@@ -38,9 +40,11 @@ void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> Mesh
                     ExistingMeshNames.Add(ExistingMeshName);
                 }
 
+                // Ajouter les nouveaux maillages qui ne sont pas déjà présents dans la sauvegarde
                 for (UStaticMesh* Mesh : MeshesSpacecraft)
                 {
                     FString MeshName = Mesh->GetName();
+                    NewMeshNames.Add(MeshName);
 
                     if (!ExistingMeshNames.Contains(MeshName))
                     {
@@ -50,7 +54,20 @@ void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> Mesh
                     }
                 }
 
-                if (JsonItems.Num() > 0)
+                // Supprimer les maillages existants qui ne sont plus dans la nouvelle liste
+                for (int32 i = ExistingJsonItems.Num() - 1; i >= 0; --i)
+                {
+                    TSharedPtr<FJsonObject> JsonObject = ExistingJsonItems[i]->AsObject();
+                    FString ExistingMeshName = JsonObject->GetStringField(TEXT("Name"));
+
+                    if (!NewMeshNames.Contains(ExistingMeshName))
+                    {
+                        ExistingJsonItems.RemoveAt(i);
+                    }
+                }
+
+                // Ajouter les nouveaux éléments dans le tableau existant et sauvegarder
+                if (JsonItems.Num() > 0 || ExistingJsonItems.Num() != RootObject->GetArrayField(TEXT("StockActualMeshPlayer")).Num())
                 {
                     ExistingJsonItems.Append(JsonItems);
                     RootObject->SetArrayField(TEXT("StockActualMeshPlayer"), ExistingJsonItems);
