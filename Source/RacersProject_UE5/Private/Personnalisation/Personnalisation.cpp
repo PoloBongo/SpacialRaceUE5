@@ -42,6 +42,24 @@ void APersonnalisation::SetupAttachmentToHoverShowRoom() const
 	}
 }
 
+FString APersonnalisation::SetupAttachmentMaterialToHoverShowRoom(UStaticMesh* StaticMesh) const
+{
+	for (const TPair<UMaterial*, bool>& MatResult : PlayerDataAssetSpacecrafts->SpacecraftMaterials)
+	{
+		UMaterial* Material = MatResult.Key;
+		FString NameMaterial = Material->GetName();
+
+		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMaterialsFromFile(*StaticMesh->GetName());
+		if(TargetStaticMesh == NameMaterial)
+		{
+			HoverControllerShowRoom->SetupMaterialToTargetMesh(StaticMesh, Material);
+			return Material->GetName();
+		}
+	}
+
+	return "NULL";
+}
+
 void APersonnalisation::ArrowLeft()
 {
 	if (Index > 0)
@@ -143,7 +161,7 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		UHorizontalBox* NewHorizontalBox = NewObject<UHorizontalBox>(ListObject);
 		UButtonAvailableMesh* NewButton = NewObject<UButtonAvailableMesh>(this, NewButtonClass);
 		UTextBlock* NewTextBlock = NewObject<UTextBlock>(NewButton);
-		UPersonnalisationComboBoxString* NewComboBoxString = NewObject<UPersonnalisationComboBoxString>(this, NewComboBoxClass);
+		NewComboBoxString = NewObject<UPersonnalisationComboBoxString>(this, NewComboBoxClass);
 
 		NewTextBlock->SetText(FText::FromString(MeshName));
 
@@ -165,7 +183,10 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 			}
 		}
 
-		NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+		FString SelectedMaterialName = SetupAttachmentMaterialToHoverShowRoom(StaticMesh);
+		NewComboBoxString->SetSelectedOption(SelectedMaterialName);
+		if (SelectedMaterialName == "NULL") NewComboBoxString->SetSelectedOption(DataAssetSpacecrafts[Index]->InitialMaterial->GetName());
+		NewComboBoxString->RefreshOptions();
 
 		FString TargetStaticMesh = SauvegardePersonnalisation->LoadPlayerMeshFromFile(StaticMesh->GetName());
 		FButtonStyle ButtonStyle = NewButton->GetStyle();
@@ -179,6 +200,7 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		NewButton->SetStyle(ButtonStyle);
 		ButtonsMeshes.Add(NewButton, StaticMesh);
 		ComboBoxStringArray.Add(NewComboBoxString, StaticMesh);
+		SauvegardePersonnalisation->SaveMaterialForMesh(StaticMesh, SelectedMaterialName);
 	}
 	SauvegardePersonnalisation->SavePlayerMeshToFile(EquipedMesh);
 	AttachClickedEvent();
@@ -348,7 +370,7 @@ void APersonnalisation::TriggerSelectionChangedDelegate(FString SelectionItem, U
 {
 	if (SelectionItem.IsEmpty() || !SelectedMesh || !PlayerDataAssetSpacecrafts) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("Nom : %s"), *SelectionItem);
+	UE_LOG(LogTemp, Warning, TEXT("Nom : %s\nNom2 : %s"), *SelectionItem, *SelectedMesh->GetName());
 	
 	UMaterial** FoundMaterial = AllAvailableMaterials.FindByPredicate([&](UMaterial* Mat)
 	{
@@ -358,7 +380,7 @@ void APersonnalisation::TriggerSelectionChangedDelegate(FString SelectionItem, U
 	if (FoundMaterial)
 	{
 		UMaterial* TargetMaterial = *FoundMaterial;
-		if (TargetMaterial && !GetValidPlayerSpacecraft(SelectedMesh))
+		if (TargetMaterial && GetValidPlayerSpacecraft(SelectedMesh))
 		{
 			SwitchMaterialFromPlayerSpacecraft(SelectedMesh, TargetMaterial);
 		}
@@ -368,14 +390,11 @@ void APersonnalisation::TriggerSelectionChangedDelegate(FString SelectionItem, U
 void APersonnalisation::SwitchMaterialFromPlayerSpacecraft(UStaticMesh* TargetMesh, UMaterial* TargetMaterial) const
 {
 	if (!PlayerDataAssetSpacecrafts && !HoverControllerShowRoom) return;
-	
-	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
-	{		
-		HoverControllerShowRoom->SetupMeshComponents(TargetMesh);
+
+	if (PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
+	{
+		HoverControllerShowRoom->SetupMaterialToTargetMesh(TargetMesh, TargetMaterial);
 		// Save //
-		if (!EquipedMesh.Contains(TargetMesh))
-		{
-			SauvegardePersonnalisation->SaveMaterialForMesh(TargetMesh, TargetMaterial);
-		}
+		SauvegardePersonnalisation->SaveMaterialForMesh(TargetMesh, TargetMaterial->GetName());
 	}
 }

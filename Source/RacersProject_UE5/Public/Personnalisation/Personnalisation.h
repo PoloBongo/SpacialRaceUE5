@@ -104,6 +104,10 @@ private:
 	TMap<UPersonnalisationComboBoxString*, UStaticMesh*> ComboBoxStringArray;
 
 	void AttachSelectionChangedEvent() const;
+	UPersonnalisationComboBoxString* NewComboBoxString = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	FString SetupAttachmentMaterialToHoverShowRoom(UStaticMesh* StaticMesh) const;
 	
 	/* Clicked Part */
 	UFUNCTION(BlueprintCallable, Category = "Button Delegate")
