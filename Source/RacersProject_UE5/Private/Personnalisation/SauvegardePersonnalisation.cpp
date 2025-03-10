@@ -19,23 +19,18 @@ void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> Mesh
     FString JsonContent;
     TArray<TSharedPtr<FJsonValue>> JsonItems;
 
-    // Charger le contenu du fichier JSON
     if (FFileHelper::LoadFileToString(JsonContent, *SaveFilePath))
     {
         TSharedPtr<FJsonObject> RootObject;
         TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonContent);
 
-        // Désérialiser le JSON
         if (FJsonSerializer::Deserialize(JsonReader, RootObject) && RootObject.IsValid())
         {
-            // Vérifier si le champ "StockActualMeshPlayer" existe
             if (RootObject->HasField(TEXT("StockActualMeshPlayer")))
             {
-                // Récupérer les éléments existants dans le tableau "StockActualMeshPlayer"
                 TArray<TSharedPtr<FJsonValue>> ExistingJsonItems = RootObject->GetArrayField(TEXT("StockActualMeshPlayer"));
                 TSet<FString> ExistingMeshNames;
 
-                // Créer un ensemble des meshes existants dans le fichier pour faciliter la comparaison
                 for (const TSharedPtr<FJsonValue>& Item : ExistingJsonItems)
                 {
                     TSharedPtr<FJsonObject> JsonObject = Item->AsObject();
@@ -43,12 +38,10 @@ void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> Mesh
                     ExistingMeshNames.Add(ExistingMeshName);
                 }
 
-                // Comparer et ajouter les nouveaux meshes à la liste si nécessaire
                 for (UStaticMesh* Mesh : MeshesSpacecraft)
                 {
                     FString MeshName = Mesh->GetName();
 
-                    // Si le mesh n'existe pas déjà dans la liste, on l'ajoute
                     if (!ExistingMeshNames.Contains(MeshName))
                     {
                         TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
@@ -57,41 +50,19 @@ void ASauvegardePersonnalisation::SavePlayerMeshToFile(TArray<UStaticMesh*> Mesh
                     }
                 }
 
-                // Ajouter les nouveaux éléments au tableau existant
                 if (JsonItems.Num() > 0)
                 {
-                    // Ajouter les nouveaux meshes au tableau existant
                     ExistingJsonItems.Append(JsonItems);
                     RootObject->SetArrayField(TEXT("StockActualMeshPlayer"), ExistingJsonItems);
 
-                    // Sérialiser et sauvegarder dans le fichier
                     FString OutputString;
                     TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutputString);
                     FJsonSerializer::Serialize(RootObject.ToSharedRef(), JsonWriter);
 
-                    // Sauvegarder dans le fichier
                     FFileHelper::SaveStringToFile(OutputString, *SaveFilePath);
-
-                    UE_LOG(LogTemp, Warning, TEXT("Fichier mis à jour avec les nouveaux meshes à %s"), *SaveFilePath);
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("Aucun nouveau mesh à ajouter."));
                 }
             }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Le champ 'StockActualMeshPlayer' n'existe pas dans le fichier JSON."));
-            }
         }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Erreur de désérialisation du fichier JSON."));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Échec du chargement du fichier JSON."));
     }
 }
 
