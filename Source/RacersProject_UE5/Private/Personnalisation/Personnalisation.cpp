@@ -174,7 +174,6 @@ void APersonnalisation::CreateChildrenForDetailCustom(UVerticalBox* ListObject)
 		{
 			SetButtonGreen(ButtonStyle);
 			EquipedMesh.Add(StaticMesh);
-			NewHorizontalBox->Rename(*StaticMesh->GetName());
 			PlayerDataAssetSpacecrafts->SpacecraftMeshes[StaticMesh] = SpawnPos;
 		}
 		NewButton->SetStyle(ButtonStyle);
