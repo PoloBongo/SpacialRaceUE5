@@ -16,6 +16,7 @@ public:
 
 	void SetupMeshComponents(UStaticMesh* TargetMesh);
 	void DetachMeshComponents(UStaticMesh* TargetMesh);
+	void SetupMaterialToTargetMesh(UStaticMesh* TargetMesh, UMaterial* TargetMaterial) const;
 protected:
 	virtual void BeginPlay() override;
 

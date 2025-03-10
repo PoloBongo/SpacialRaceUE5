@@ -52,3 +52,20 @@ void AHoverControllerShowRoom::DetachMeshComponents(UStaticMesh* TargetMesh)
 		}
 	}
 }
+
+void AHoverControllerShowRoom::SetupMaterialToTargetMesh(UStaticMesh* TargetMesh, UMaterial* TargetMaterial) const
+{
+	if (!PlayerDataAssetSpacecrafts || !TargetMaterial || !TargetMesh) return;
+	if (!PlayerDataAssetSpacecrafts->SpacecraftMaterials.Contains(TargetMaterial)) return;
+	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh)) return;
+
+	TargetMesh->SetMaterial(0, TargetMaterial);
+
+	for (UStaticMeshComponent* MeshComponent : MeshComponents)
+	{
+		if (MeshComponent)
+		{
+			MeshComponent->SetEnableGravity(false);
+		}
+	}
+}

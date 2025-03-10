@@ -15,8 +15,9 @@ class RACERSPROJECT_UE5_API ASauvegardePersonnalisation : public AActor
 public:	
 	ASauvegardePersonnalisation();
 	void SavePlayerMeshToFile(TArray<UStaticMesh*> MeshesSpacecraft) const;
-	void SaveMaterialForMesh(UStaticMesh* Mesh, UMaterialInterface* Material) const;
+	void SaveMaterialForMesh(UStaticMesh* Mesh, FString Material) const;
 	FString LoadPlayerMeshFromFile(FString OriginalMesh) const;
+	FString LoadPlayerMaterialsFromFile(FString OriginalMesh) const;
 	int GetArrayOfSave() const;
 	
 protected:
