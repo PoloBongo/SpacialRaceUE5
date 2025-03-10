@@ -5,14 +5,6 @@
 			"Material": "M_Vortex_Yellow"
 		},
 		{
-			"Name": "SM_Vortex_Cockpit2",
-			"Material": "M_Vortex_Green"
-		},
-		{
-			"Name": "SM_Vortex_Engine2",
-			"Material": "M_Vortex_Violet"
-		},
-		{
 			"Name": "SM_Vortex_Spoiler1",
 			"Material": "M_Vortex_Yellow"
 		},
@@ -21,7 +13,11 @@
 			"Material": "NULL"
 		},
 		{
-			"Name": "SM_Vortex_Engine4"
+			"Name": "SM_Vortex_Cockpit1",
+			"Material": "M_Vortex_White"
+		},
+		{
+			"Name": "SM_Vortex_Engine2"
 		}
 	]
 }
