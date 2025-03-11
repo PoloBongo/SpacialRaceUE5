@@ -361,7 +361,7 @@ void APersonnalisation::SetButtonRed(FButtonStyle& ButtonStyle)
 void APersonnalisation::AttachSelectionChangedEvent() const
 {
 	if (UFunction* BindingTargetSelectionChangedFunction = CustomizationWidget->FindFunction(TEXT("BindingTargetSelectionChanged")))
-	{        
+	{
 		CustomizationWidget->ProcessEvent(BindingTargetSelectionChangedFunction, nullptr);
 	}
 }
