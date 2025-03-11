@@ -2,6 +2,7 @@
 
 #include "Personnalisation/PossibilityDataCombinaison.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
+#include "NiagaraComponent.h"
 
 AHoverController::AHoverController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), PlayerSpacecraft(nullptr), LengthSpacecraftMesh(0), AngularRotSpeed(0),
@@ -10,6 +11,9 @@ AHoverController::AHoverController(const FObjectInitializer& ObjectInitializer)
 {    
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent->SetMobility(EComponentMobility::Movable);
+
+	ActualEngineNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	ActualEngineNiagara->SetMobility(EComponentMobility::Movable);
 }
 
 void AHoverController::Initialize(int _Length)
@@ -47,6 +51,7 @@ void AHoverController::Initialize(int _Length)
 		MeshesComponents.Add(MeshComponent);
 	}
 
+	ActualEngineNiagara->AttachToComponent(MeshesComponents[0], FAttachmentTransformRules::KeepRelativeTransform);
 	SetupAttachmentMeshToHover();
 }
 
@@ -75,6 +80,8 @@ void AHoverController::SetupAttachmentMeshToHover()
 		if (StaticMesh->GetName() == "SM_Vortex_Spoiler2") TargetMeshComponent->SetRelativeRotation(FRotator(0, 180.0, 0));
 		else if (StaticMesh->GetName() == "SM_Vortex_Engine4") TargetMeshComponent->SetRelativeRotation(FRotator(-90.0, 0, 0));
 		else TargetMeshComponent->SetRelativeRotation(FRotator(0, 0, 0));
+
+		SetupNiagaraEngine(StaticMesh->GetName());
 		
 		Index++;
 	}
@@ -104,11 +111,38 @@ void AHoverController::SetupVariable()
 	}
 }
 
+void AHoverController::SetupNiagaraEngine(const FString& StaticMeshName)
+{
+	if (!ActualEngineNiagara) return;
+
+	UNiagaraSystem* SelectedSystem = nullptr;
+	FVector SelectedLocation = FVector::ZeroVector;
+
+	for (const auto& Elem : EnginesNiagara)
+	{
+		if ((StaticMeshName == "SM_Vortex_Engine2" && Elem.Key) ||
+			(StaticMeshName == "SM_Vortex_Engine1" && Elem.Key))
+		{
+			SelectedSystem = Elem.Key;
+			SelectedLocation = Elem.Value;
+			break;
+		}
+	}
+
+	ActualEngineNiagara->SetAsset(SelectedSystem);
+    
+	if (SelectedSystem)
+	{
+		ActualEngineNiagara->SetRelativeLocation(SelectedLocation);
+	}
+
+	ActualEngineNiagara->Activate();
+}
+
 void AHoverController::SetupInput_Implementation()
 {
 	// nada, l'event est géré en blueprint
 }
-
 
 void AHoverController::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
