@@ -38,6 +38,7 @@ void APersonnalisation::SetupAttachmentToHoverShowRoom() const
 		if(TargetStaticMesh == NameStaticMesh)
 		{
 			HoverControllerShowRoom->SetupMeshComponents(StaticMesh);
+			SetupAttachmentMaterialToHoverShowRoom(StaticMesh);
 		}
 	}
 }
