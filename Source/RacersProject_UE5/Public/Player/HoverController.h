@@ -6,6 +6,8 @@
 
 class UPossibilityDataCombinaison;
 class UDataAssetSpacecraft;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 UCLASS()
 class RACERSPROJECT_UE5_API AHoverController : public APawn
@@ -35,6 +37,13 @@ private:
 
 	void SetupVariable();
 	void SetupAttachmentMeshToHover();
+	void SetupNiagaraEngine(const FString& StaticMeshName);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	TMap<UNiagaraSystem*, FVector> EnginesNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
+	UNiagaraComponent* ActualEngineNiagara;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	int LengthSpacecraftMesh;
