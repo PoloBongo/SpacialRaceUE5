@@ -40,7 +40,7 @@ private:
 	void SetupNiagaraEngine(const FString& StaticMeshName);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
-	TMap<UNiagaraSystem*, FVector> EnginesNiagara;
+	TMap<UNiagaraSystem*, FTransform> EnginesNiagara;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UNiagaraComponent* ActualEngineNiagara;

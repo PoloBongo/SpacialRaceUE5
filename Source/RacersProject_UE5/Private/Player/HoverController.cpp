@@ -116,12 +116,13 @@ void AHoverController::SetupNiagaraEngine(const FString& StaticMeshName)
 	if (!ActualEngineNiagara) return;
 
 	UNiagaraSystem* SelectedSystem = nullptr;
-	FVector SelectedLocation = FVector::ZeroVector;
+	FTransform SelectedLocation;
 
 	for (const auto& Elem : EnginesNiagara)
 	{
 		if ((StaticMeshName == "SM_Vortex_Engine2" && Elem.Key) ||
-			(StaticMeshName == "SM_Vortex_Engine1" && Elem.Key))
+			(StaticMeshName == "SM_Vortex_Engine1" && Elem.Key) ||
+			(StaticMeshName == "SM_Vortex_Engine4" && Elem.Key))
 		{
 			SelectedSystem = Elem.Key;
 			SelectedLocation = Elem.Value;
@@ -133,7 +134,7 @@ void AHoverController::SetupNiagaraEngine(const FString& StaticMeshName)
     
 	if (SelectedSystem)
 	{
-		ActualEngineNiagara->SetRelativeLocation(SelectedLocation);
+		ActualEngineNiagara->SetRelativeTransform(SelectedLocation);
 	}
 
 	ActualEngineNiagara->Activate();
