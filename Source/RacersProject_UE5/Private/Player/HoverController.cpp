@@ -115,26 +115,29 @@ void AHoverController::SetupNiagaraEngine(const FString& StaticMeshName)
 {
 	if (!ActualEngineNiagara) return;
 
+	TArray<UNiagaraSystem*> Lists;
+	TArray<FTransform> ListTransforms;
+
 	UNiagaraSystem* SelectedSystem = nullptr;
-	FTransform SelectedLocation;
 
 	for (const auto& Elem : EnginesNiagara)
 	{
-		if ((StaticMeshName == "SM_Vortex_Engine2" && Elem.Key) ||
-			(StaticMeshName == "SM_Vortex_Engine1" && Elem.Key) ||
-			(StaticMeshName == "SM_Vortex_Engine4" && Elem.Key))
-		{
-			SelectedSystem = Elem.Key;
-			SelectedLocation = Elem.Value;
-			break;
-		}
+		SelectedSystem = Elem.Key;
+		FTransform SelectedLocation = Elem.Value;
+
+		Lists.Add(SelectedSystem);
+		ListTransforms.Add(SelectedLocation);
 	}
 
-	ActualEngineNiagara->SetAsset(SelectedSystem);
+	if (StaticMeshName == "SM_Vortex_Engine2") ActualEngineNiagara->SetAsset(Lists[0]);
+	if (StaticMeshName == "SM_Vortex_Engine1") ActualEngineNiagara->SetAsset(Lists[1]);
+	if (StaticMeshName == "SM_Vortex_Engine4") ActualEngineNiagara->SetAsset(Lists[2]);
     
 	if (SelectedSystem)
 	{
-		ActualEngineNiagara->SetRelativeTransform(SelectedLocation);
+		if (StaticMeshName == "SM_Vortex_Engine2") ActualEngineNiagara->SetRelativeTransform(ListTransforms[0]);
+		if (StaticMeshName == "SM_Vortex_Engine1") ActualEngineNiagara->SetRelativeTransform(ListTransforms[1]);
+		if (StaticMeshName == "SM_Vortex_Engine4") ActualEngineNiagara->SetRelativeTransform(ListTransforms[2]);
 	}
 
 	ActualEngineNiagara->Activate();
