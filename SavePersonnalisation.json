@@ -15,10 +15,6 @@
 		{
 			"Name": "SM_Vortex_Cockpit1",
 			"Material": "M_Vortex_White"
-		},
-		{
-			"Name": "SM_Vortex_Engine2",
-			"Material": "NULL"
 		}
 	]
 }
