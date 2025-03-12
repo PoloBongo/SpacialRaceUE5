@@ -9,15 +9,13 @@
 			"Material": "M_Vortex_Yellow"
 		},
 		{
-			"Name": "SM_Vortex_Spoiler2",
-			"Material": "NULL"
+			"Name": "SM_Vortex_Cockpit1"
 		},
 		{
-			"Name": "SM_Vortex_Cockpit1",
-			"Material": "M_Vortex_White"
+			"Name": "SM_Vortex_Engine2"
 		},
 		{
-			"Name": "SM_Vortex_Engine1"
+			"Name": "SM_Vortex_Spoiler2"
 		}
 	]
 }
