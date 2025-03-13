@@ -6,6 +6,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Notification/GameNotificationManager.h"
 #include "Personnalisation/SauvegardePersonnalisation.h"
 #include "Personnalisation/DataAsset/DataAssetSpacecraft.h"
 #include "Personnalisation/DataAsset/PlayerSpacecraft.h"
@@ -292,7 +293,7 @@ void APersonnalisation::RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* Target
 
 void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMesh, FButtonStyle& ButtonStyle)
 {
-	if (!PlayerDataAssetSpacecrafts && !HoverControllerShowRoom) return;
+	if (!PlayerDataAssetSpacecrafts || !HoverControllerShowRoom || !GameNotificationManager) return;
 	
 	if (!PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh) && PlayerDataAssetSpacecrafts->OriginalSpacecraft->SpacecraftMeshes.Contains(TargetMesh))
 	{
@@ -305,6 +306,7 @@ void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMes
 			{
 				if (ListEngines.Contains(Pair.Key->GetName()))
 				{
+					GameNotificationManager->SetTextNotification("Impossible d'equiper un deuxieme Engine!", FColor::Red);
 					return;
 				}
 			}
