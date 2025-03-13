@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Personnalisation.generated.h"
 
+class AGameNotificationManager;
 class UPersonnalisationComboBoxString;
 class UButton;
 class ASauvegardePersonnalisation;
@@ -139,4 +140,9 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void SetupPosForEachMeshPart();
+
+	/* Notification Part */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Notification", meta=(AllowPrivateAccess="true"))
+	AGameNotificationManager* GameNotificationManager;
+	
 };
