@@ -13,10 +13,16 @@
 			"Material": "NULL"
 		},
 		{
-			"Name": "SM_Vortex_Engine2"
+			"Name": "SM_Vortex_Engine2",
+			"Material": "NULL"
 		},
 		{
-			"Name": "SM_Vortex_Cockpit1"
+			"Name": "SM_Vortex_Cockpit1",
+			"Material": "NULL"
+		},
+		{
+			"Name": "SM_Vortex_Piece1",
+			"Material": "NULL"
 		}
 	]
 }

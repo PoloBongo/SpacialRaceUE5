@@ -199,8 +199,6 @@ void ASauvegardePersonnalisation::SaveMaterialForMesh(UStaticMesh* Mesh, FString
 			FFileHelper::SaveStringToFile(OutputString, *SaveFilePath);
 		}
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Updated material for mesh: %s"), *MeshName);
 }
 
 FString ASauvegardePersonnalisation::LoadPlayerMaterialsFromFile(FString OriginalMesh) const
