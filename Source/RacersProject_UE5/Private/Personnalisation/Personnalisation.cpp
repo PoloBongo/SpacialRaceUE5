@@ -274,7 +274,11 @@ void APersonnalisation::RemoveStaticMeshFromPlayerSpacecraft(UStaticMesh* Target
 
 	for (int i = 0; i < BlacklistBodyRemoved.Num(); i++)
 	{
-		if (TargetMesh->GetName() == BlacklistBodyRemoved[i]) return;
+		if (TargetMesh->GetName() == BlacklistBodyRemoved[i])
+		{
+			GameNotificationManager->SetTextNotification("Impossible de retirer ces elements!", FColor::Red);
+			return;
+		}
 	}
 
 	if (PlayerDataAssetSpacecrafts->SpacecraftMeshes.Contains(TargetMesh))
@@ -318,6 +322,7 @@ void APersonnalisation::AddStaticMeshFromPlayerSpacecraft(UStaticMesh* TargetMes
 			{
 				if (ListCockpits.Contains(Pair.Key->GetName()))
 				{
+					GameNotificationManager->SetTextNotification("Impossible d'equiper un deuxieme Cockpit!", FColor::Red);
 					return;
 				}
 			}
