@@ -18,9 +18,11 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void StartRace();
 
+	/* Réf à la classe Hover Controller */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TSubclassOf<AHoverController> HoverController;
 
+	/* Spawn pos du joueur*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	FVector SpawnPos;
 

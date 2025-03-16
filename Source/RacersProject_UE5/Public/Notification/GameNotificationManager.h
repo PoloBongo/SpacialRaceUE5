@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "GameNotificationManager.generated.h"
 
+/* Structure du message de notification */
 USTRUCT(BlueprintType)
 struct FNotification
 {
@@ -28,24 +29,29 @@ public:
 
 static AGameNotificationManager* GetInstance(UWorld* World);
 
+	/* Permet de lancer une notification */
 	void SetTextNotification(FString NewNotification, FColor Color);
 	void ShowNotification(const FNotification& NewNotification);
 	FString GetTextNotification();
 protected:
 	virtual void BeginPlay() override;
 private:
+	/* texte de la notification*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess="true"))
 	FString TextNotification;
 	
 	FTimerHandle NotificationHandle;
 	FTimerManager NotificationManager;
 
+	/* user widget (ui) de la notification*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI", meta=(AllowPrivateAccess="true"))
 	UUserWidget* NotificationWidget;
 
+	/* temps de la notification*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI", meta=(AllowPrivateAccess="true"))
 	float NotificationDuration;
 
+	/* Système de queue pour les notif*/
 	TQueue<FNotification> NotificationQueue;
 	
 	void HiddeNotification();

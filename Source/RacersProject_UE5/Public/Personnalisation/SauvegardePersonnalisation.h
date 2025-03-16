@@ -7,6 +7,7 @@
 class APersonnalisation;
 class UDataAssetSpacecraft;
 
+/* Fichier de sauvegarde pour la personnalisation du hover */
 UCLASS()
 class RACERSPROJECT_UE5_API ASauvegardePersonnalisation : public AActor
 {

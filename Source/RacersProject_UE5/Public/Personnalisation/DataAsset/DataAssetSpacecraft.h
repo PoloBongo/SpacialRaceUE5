@@ -4,9 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "DataAssetSpacecraft.generated.h"
 
-/**
- * 
- */
+/* Liste de tout les hovers */
 UCLASS()
 class RACERSPROJECT_UE5_API UDataAssetSpacecraft : public UDataAsset
 {
