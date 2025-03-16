@@ -53,6 +53,10 @@ void AGameNotificationManager::ShowNotification(const FNotification& NewNotifica
 
 	if (!GetWorld()->GetTimerManager().IsTimerActive(NotificationHandle))
 	{
+		if (UFunction* LaunchAnimationPopupFunction = NotificationWidget->FindFunction(TEXT("LaunchAnimationPopup")))
+		{        
+			NotificationWidget->ProcessEvent(LaunchAnimationPopupFunction, nullptr);
+		}
 		ProcessNextNotification();
 	}
 }
