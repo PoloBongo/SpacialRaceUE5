@@ -238,7 +238,6 @@ void APersonnalisation::TriggerButtonClickedDelegate(UStaticMesh* SelectedMesh, 
 {
 	if (!SelectedMesh || !SelectedButton || !PlayerDataAssetSpacecrafts) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("Nom : %s"), *SelectedMesh->GetName());
 	FButtonStyle ButtonStyle = SelectedButton->GetStyle();
 	
 	if (!GetValidPlayerSpacecraft(SelectedMesh))
@@ -377,8 +376,6 @@ void APersonnalisation::AttachSelectionChangedEvent() const
 void APersonnalisation::TriggerSelectionChangedDelegate(FString SelectionItem, UStaticMesh* SelectedMesh)
 {
 	if (SelectionItem.IsEmpty() || !SelectedMesh || !PlayerDataAssetSpacecrafts) return;
-	
-	UE_LOG(LogTemp, Warning, TEXT("Nom : %s\nNom2 : %s"), *SelectionItem, *SelectedMesh->GetName());
 	
 	UMaterial** FoundMaterial = AllAvailableMaterials.FindByPredicate([&](UMaterial* Mat)
 	{
