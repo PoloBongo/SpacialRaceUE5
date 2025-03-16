@@ -26,9 +26,11 @@ public:
 	void Initialize(int _Length);
 
 private:
+	/* Liste des combinaisons */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combinaison", meta=(AllowPrivateAccess="true"))
 	TArray<UPossibilityDataCombinaison*> PossibilityDataCombinaison;
-	
+
+	/* Listes des mesh components créer selon le nombre de partie séléctionner par le joueur */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TArray<UStaticMeshComponent*> MeshesComponents;
 	
@@ -38,12 +40,16 @@ private:
 	void SetupVariable();
 	void SetupAttachmentMeshToHover();
 	void SetupNiagaraEngine(const FString& StaticMeshName);
-	
+
+	/* Permet de récupérer de DataAsset chaque niagara à son transform */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	TMap<UNiagaraSystem*, FTransform> EnginesNiagara;
 
+	/* Réf au niagara pour l'engine actuel */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	UNiagaraComponent* ActualEngineNiagara;
+
+	/* Référence au data pour la physique, permet de les appliquer au Hover Controller */
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Property", meta=(AllowPrivateAccess="true"))
 	int LengthSpacecraftMesh;

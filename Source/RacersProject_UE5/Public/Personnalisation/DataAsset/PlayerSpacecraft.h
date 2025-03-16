@@ -4,9 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "PlayerSpacecraft.generated.h"
 
-/**
- * 
- */
+/* Hover par default au commencement du jeu ( quand la save n'est pas chargé ou qu'elle est vide ) */
 UCLASS()
 class RACERSPROJECT_UE5_API UPlayerSpacecraft : public UDataAsset
 {
